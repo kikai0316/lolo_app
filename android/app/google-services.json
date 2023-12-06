@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858756775400",
+    "project_id": "lolo-app-38ca7",
+    "storage_bucket": "lolo-app-38ca7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858756775400:android:cd9cdc3ceda052c7bef85d",
+        "android_client_info": {
+          "package_name": "com.example.lolo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE-2x-UD7a--UYJO8QwwKkFhYa8rUcvcs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
