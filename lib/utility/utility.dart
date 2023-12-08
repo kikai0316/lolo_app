@@ -4,12 +4,15 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/view/home.dart';
+import 'package:lolo_app/view/location_request.dart';
 import 'package:lolo_app/view/not_data/not_birthday_page.dart';
 import 'package:lolo_app/view/not_data/not_img_page.dart';
 import 'package:lolo_app/view/not_data/not_name_page.dart';
+import 'package:lolo_app/view/not_data/not_permission_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 double safeHeight(BuildContext context) {
@@ -64,7 +67,7 @@ EdgeInsetsGeometry xPadding(
   );
 }
 
-Widget nextScreenWhisUserDataCheck(UserData userData) {
+Widget? nextScreenWhisUserDataCheck(UserData userData) {
   return userData.name.isEmpty
       ? NotNamePage(
           userData: userData,
@@ -77,7 +80,7 @@ Widget nextScreenWhisUserDataCheck(UserData userData) {
               ? NotImgPage(
                   userData: userData,
                 )
-              : const HomePage();
+              : null;
 }
 
 Future getMobileImage({
@@ -96,4 +99,23 @@ Future getMobileImage({
   } catch (e) {
     onError();
   }
+}
+
+Future<Widget> nextScreenWithLocationCheck(UserData userData) async {
+  final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return const NotLocationPermissionPage();
+  }
+
+  final permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.deniedForever) {
+    return const NotLocationPermissionPage();
+  }
+
+  if (permission == LocationPermission.denied) {
+    return RequestLocationsPage(userData: userData);
+  }
+
+  final currentPosition = await Geolocator.getCurrentPosition();
+  return HomePage(userData: userData, locationData: currentPosition);
 }

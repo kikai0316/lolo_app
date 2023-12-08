@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_data.dart';
+part of 'store_list.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userDataNotifierHash() => r'74c24c30401f9c002f9b85093e9a0e3d0e6e373b';
+String _$storeDataListNotifierHash() =>
+    r'69afdfaa2cbe43f05d23354b33336f2080dcc8eb';
 
-/// See also [UserDataNotifier].
-@ProviderFor(UserDataNotifier)
-final userDataNotifierProvider =
-    AsyncNotifierProvider<UserDataNotifier, UserData?>.internal(
-  UserDataNotifier.new,
-  name: r'userDataNotifierProvider',
+/// See also [StoreDataListNotifier].
+@ProviderFor(StoreDataListNotifier)
+final storeDataListNotifierProvider =
+    AsyncNotifierProvider<StoreDataListNotifier, List<StoreData>>.internal(
+  StoreDataListNotifier.new,
+  name: r'storeDataListNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$userDataNotifierHash,
+      : _$storeDataListNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$UserDataNotifier = AsyncNotifier<UserData?>;
+typedef _$StoreDataListNotifier = AsyncNotifier<List<StoreData>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

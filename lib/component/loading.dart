@@ -48,7 +48,7 @@ class WithIconInLoadingPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
-
+    final safeAreaWidth = MediaQuery.of(context).size.width;
     return Container(
       alignment: Alignment.center,
       color: Colors.black,
@@ -62,6 +62,8 @@ class WithIconInLoadingPage extends HookConsumerWidget {
           //   width: safeAreaHeight * 0.3,
           //   decoration: BoxDecoration(image: appLogoImg()),
           // ),
+          nText("LoLo",
+              color: Colors.white, fontSize: safeAreaWidth / 7, bold: 700),
           Padding(
             padding: EdgeInsets.only(top: safeAreaHeight * 0.02),
             child: CupertinoActivityIndicator(

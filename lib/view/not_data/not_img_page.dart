@@ -56,8 +56,17 @@ class NotImgPage extends HookConsumerWidget {
       );
       final iswWite = await writeUserData(setData);
       if (iswWite) {
-        // ignore: use_build_context_synchronously
-        screenTransitionNormal(context, nextScreenWhisUserDataCheck(setData));
+        final nextScreenWhisUserData = nextScreenWhisUserDataCheck(setData);
+        if (nextScreenWhisUserData != null) {
+          // ignore: use_build_context_synchronously
+          screenTransitionNormal(context, nextScreenWhisUserData);
+        } else {
+          final nextScreenWithLocation =
+              await nextScreenWithLocationCheck(setData);
+          if (context.mounted) {
+            screenTransitionNormal(context, nextScreenWithLocation);
+          }
+        }
       } else {
         isLoading.value = false;
         showSnackbar();

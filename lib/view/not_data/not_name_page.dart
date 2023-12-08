@@ -36,8 +36,17 @@ class NotNamePage extends HookConsumerWidget {
       );
       final isWite = await writeUserData(setData);
       if (isWite) {
-        // ignore: use_build_context_synchronously
-        screenTransitionNormal(context, nextScreenWhisUserDataCheck(setData));
+        final nextScreenWhisUserData = nextScreenWhisUserDataCheck(setData);
+        if (nextScreenWhisUserData != null) {
+          // ignore: use_build_context_synchronously
+          screenTransitionNormal(context, nextScreenWhisUserData);
+        } else {
+          final nextScreenWithLocation =
+              await nextScreenWithLocationCheck(setData);
+          if (context.mounted) {
+            screenTransitionNormal(context, nextScreenWithLocation);
+          }
+        }
       } else {
         isLoading.value = false;
         // ignore: use_build_context_synchronously

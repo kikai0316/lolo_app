@@ -33,6 +33,18 @@ class MyApp extends HookConsumerWidget {
       return userData;
     }
 
+    Future<Widget> navigateBasedOnLocationAccess(UserData userData) async {
+      final nextScreenWhisUserData = nextScreenWhisUserDataCheck(userData);
+      if (nextScreenWhisUserData != null) {
+        // ignore: use_build_context_synchronously
+        return nextScreenWhisUserData;
+      } else {
+        final nextScreenWithLocation =
+            await nextScreenWithLocationCheck(userData);
+        return nextScreenWithLocation;
+      }
+    }
+
     if (user == null) {
       return const MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -53,7 +65,24 @@ class MyApp extends HookConsumerWidget {
               if (snapshotUser.data == null) {
                 return const StartPage();
               } else {
-                return nextScreenWhisUserDataCheck(snapshotUser.data!);
+                return FutureBuilder<Widget>(
+                  future: navigateBasedOnLocationAccess(snapshotUser.data!),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<Widget> snapshotUser) {
+                    if (snapshotUser.connectionState ==
+                        ConnectionState.waiting) {
+                      return const WithIconInLoadingPage();
+                    } else if (snapshotUser.hasError) {
+                      return const StartPage();
+                    } else {
+                      if (snapshotUser.data == null) {
+                        return const StartPage();
+                      } else {
+                        return snapshotUser.data!;
+                      }
+                    }
+                  },
+                );
               }
             }
           },

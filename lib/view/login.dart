@@ -13,10 +13,8 @@ import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/secure_storage_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/home.dart';
 import 'package:lolo_app/view/login/login_sheet.dart';
 import 'package:lolo_app/view/login/singin_sheet.dart';
-import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/login_widget.dart';
 
 class StartPage extends HookConsumerWidget {
@@ -41,13 +39,20 @@ class StartPage extends HookConsumerWidget {
 
     Future<void> nextPage(UserData userData) async {
       final isSuccess = await writeUserData(userData);
-      final userDataNotifier = ref.read(userDataNotifierProvider.notifier);
-      await userDataNotifier.reLoad();
       // final isPermission = await checkNotificationPermissionStatus();
       isLoading.value = false;
       if (isSuccess) {
-        // ignore: use_build_context_synchronously
-        screenTransitionNormal(context, const HomePage());
+        final nextScreenWhisUserData = nextScreenWhisUserDataCheck(userData);
+        if (nextScreenWhisUserData != null) {
+          // ignore: use_build_context_synchronously
+          screenTransitionNormal(context, nextScreenWhisUserData);
+        } else {
+          final nextScreenWithLocation =
+              await nextScreenWithLocationCheck(userData);
+          if (context.mounted) {
+            screenTransitionNormal(context, nextScreenWithLocation);
+          }
+        }
       } else {
         showSnackbar(2);
       }
