@@ -151,7 +151,7 @@ class HomePage extends HookConsumerWidget {
                 initialCameraPosition: CameraPosition(
                   target: LatLng(
                       myLocation.value.latitude, myLocation.value.longitude),
-                  zoom: 11,
+                  zoom: 12,
                   tilt: 10,
                 ),
                 onMapCreated: (controller) {
@@ -242,7 +242,7 @@ class HomePage extends HookConsumerWidget {
                                           CameraPosition(
                                             target: LatLng(
                                                 data.latitude, data.longitude),
-                                            zoom: 16,
+                                            zoom: 17,
                                             tilt: 10,
                                           ),
                                         ),
@@ -256,7 +256,7 @@ class HomePage extends HookConsumerWidget {
                                   CameraPosition(
                                     target: LatLng(locationData.latitude,
                                         locationData.longitude),
-                                    zoom: 11,
+                                    zoom: 12,
                                     tilt: 10,
                                   ),
                                 ),
@@ -371,7 +371,8 @@ class HomePage extends HookConsumerWidget {
                                   ),
                                   distance: calculateDistanceToString(
                                       allStoresWhen[i].location,
-                                      myLocation.value),
+                                      LatLng(locationData.latitude,
+                                          locationData.longitude)),
                                   onTap: () => screenTransitionHero(
                                     context,
                                     SwiperPage(

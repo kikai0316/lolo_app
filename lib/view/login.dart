@@ -164,27 +164,6 @@ class StartPage extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom: safeAreaHeight * 0.05,
-                        ),
-                        child: privacyText(
-                          context: context,
-                          onTap1: () => openURL(
-                            url: termsURL,
-                            onError: () => showSnackbar(2),
-                          ),
-                          onTap2: () => openURL(
-                            url: privacyURL,
-                            onError: () => showSnackbar(2),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   bottomButton(
                     context: context,
                     isWhiteMainColor: true,
@@ -215,6 +194,23 @@ class StartPage extends HookConsumerWidget {
                   ),
                   SizedBox(
                     height: safeAreaHeight * 0.02,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: safeAreaHeight * 0.05,
+                      bottom: safeAreaHeight * 0.02,
+                    ),
+                    child: privacyText(
+                      context: context,
+                      onTap1: () => openURL(
+                        url: termsURL,
+                        onError: () => showSnackbar(2),
+                      ),
+                      onTap2: () => openURL(
+                        url: privacyURL,
+                        onError: () => showSnackbar(2),
+                      ),
+                    ),
                   ),
                 ],
               ),
