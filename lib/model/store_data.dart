@@ -12,6 +12,8 @@ class StoreData with _$StoreData {
       required Uint8List? logo,
       required String id,
       required String name,
+      required String address,
+      required String businessHours,
       required LatLng location}) = _StoreData;
 }
 

@@ -20,6 +20,8 @@ mixin _$StoreData {
   Uint8List? get logo => throw _privateConstructorUsedError;
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get address => throw _privateConstructorUsedError;
+  String get businessHours => throw _privateConstructorUsedError;
   LatLng get location => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -37,6 +39,8 @@ abstract class $StoreDataCopyWith<$Res> {
       Uint8List? logo,
       String id,
       String name,
+      String address,
+      String businessHours,
       LatLng location});
 }
 
@@ -57,6 +61,8 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
     Object? logo = freezed,
     Object? id = null,
     Object? name = null,
+    Object? address = null,
+    Object? businessHours = null,
     Object? location = null,
   }) {
     return _then(_value.copyWith(
@@ -75,6 +81,14 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      businessHours: null == businessHours
+          ? _value.businessHours
+          : businessHours // ignore: cast_nullable_to_non_nullable
               as String,
       location: null == location
           ? _value.location
@@ -97,6 +111,8 @@ abstract class _$$StoreDataImplCopyWith<$Res>
       Uint8List? logo,
       String id,
       String name,
+      String address,
+      String businessHours,
       LatLng location});
 }
 
@@ -115,6 +131,8 @@ class __$$StoreDataImplCopyWithImpl<$Res>
     Object? logo = freezed,
     Object? id = null,
     Object? name = null,
+    Object? address = null,
+    Object? businessHours = null,
     Object? location = null,
   }) {
     return _then(_$StoreDataImpl(
@@ -134,6 +152,14 @@ class __$$StoreDataImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      businessHours: null == businessHours
+          ? _value.businessHours
+          : businessHours // ignore: cast_nullable_to_non_nullable
+              as String,
       location: null == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -150,6 +176,8 @@ class _$StoreDataImpl implements _StoreData {
       required this.logo,
       required this.id,
       required this.name,
+      required this.address,
+      required this.businessHours,
       required this.location})
       : _postImgList = postImgList;
 
@@ -168,11 +196,15 @@ class _$StoreDataImpl implements _StoreData {
   @override
   final String name;
   @override
+  final String address;
+  @override
+  final String businessHours;
+  @override
   final LatLng location;
 
   @override
   String toString() {
-    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, location: $location)';
+    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, location: $location)';
   }
 
   @override
@@ -185,6 +217,9 @@ class _$StoreDataImpl implements _StoreData {
             const DeepCollectionEquality().equals(other.logo, logo) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.businessHours, businessHours) ||
+                other.businessHours == businessHours) &&
             (identical(other.location, location) ||
                 other.location == location));
   }
@@ -196,6 +231,8 @@ class _$StoreDataImpl implements _StoreData {
       const DeepCollectionEquality().hash(logo),
       id,
       name,
+      address,
+      businessHours,
       location);
 
   @JsonKey(ignore: true)
@@ -211,6 +248,8 @@ abstract class _StoreData implements StoreData {
       required final Uint8List? logo,
       required final String id,
       required final String name,
+      required final String address,
+      required final String businessHours,
       required final LatLng location}) = _$StoreDataImpl;
 
   @override
@@ -221,6 +260,10 @@ abstract class _StoreData implements StoreData {
   String get id;
   @override
   String get name;
+  @override
+  String get address;
+  @override
+  String get businessHours;
   @override
   LatLng get location;
   @override

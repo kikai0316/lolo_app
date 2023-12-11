@@ -7,7 +7,7 @@ Future<StoreData?> storeDataGet(StoreData storeData) async {
   try {
     final List<StoryImgType> imgList = [];
     final resultMain = await FirebaseStorage.instance
-        .ref("stores/${storeData.id}/main")
+        .ref("store/${storeData.id}/main")
         .listAll();
     final mainImgGet = await resultMain.items.first.getData();
     if (mainImgGet != null) {
@@ -23,11 +23,14 @@ Future<StoreData?> storeDataGet(StoreData storeData) async {
         }
       }
       return StoreData(
-          postImgList: imgList,
-          logo: mainImgGet,
-          id: storeData.id,
-          name: resultMain.items.first.name,
-          location: storeData.location);
+        postImgList: imgList,
+        logo: mainImgGet,
+        id: storeData.id,
+        name: storeData.name,
+        location: storeData.location,
+        address: storeData.address,
+        businessHours: "",
+      );
     } else {
       return null;
     }

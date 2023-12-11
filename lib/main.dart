@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/loading.dart';
@@ -14,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    name: "lolo-app",
+    name: "lolo-app-club",
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const ProviderScope(child: MyApp()));
@@ -35,12 +36,13 @@ class MyApp extends HookConsumerWidget {
 
     Future<Widget> navigateBasedOnLocationAccess(UserData userData) async {
       final nextScreenWhisUserData = nextScreenWhisUserDataCheck(userData);
+
       if (nextScreenWhisUserData != null) {
         // ignore: use_build_context_synchronously
         return nextScreenWhisUserData;
       } else {
         final nextScreenWithLocation =
-            await nextScreenWithLocationCheck(userData);
+            await nextScreenWithLocationCheck(userData, ref);
         return nextScreenWithLocation;
       }
     }
@@ -52,6 +54,11 @@ class MyApp extends HookConsumerWidget {
       );
     } else {
       return MaterialApp(
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         debugShowCheckedModeBanner: false,
         home: FutureBuilder<UserData?>(
           future: getSecureStorageData(),

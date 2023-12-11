@@ -48,7 +48,7 @@ class StartPage extends HookConsumerWidget {
           screenTransitionNormal(context, nextScreenWhisUserData);
         } else {
           final nextScreenWithLocation =
-              await nextScreenWithLocationCheck(userData);
+              await nextScreenWithLocationCheck(userData, ref);
           if (context.mounted) {
             screenTransitionNormal(context, nextScreenWithLocation);
           }
@@ -189,14 +189,11 @@ class StartPage extends HookConsumerWidget {
                     context: context,
                     isWhiteMainColor: true,
                     text: "ログイン",
-                    onTap: () => bottomSheet(
-                      context,
-                      page: LoginSheetWidget(
-                        onTap: (email, password) => logIn(email, password),
-                      ),
-                      isBackgroundColor: true,
-                      isPOP: true,
-                    ),
+                    onTap: () => bottomSheet(context,
+                        page: LoginSheetWidget(
+                          onTap: (email, password) => logIn(email, password),
+                        ),
+                        isBackgroundColor: true),
                   ),
                   Padding(
                     padding: EdgeInsets.only(
@@ -209,15 +206,12 @@ class StartPage extends HookConsumerWidget {
                   borderButton(
                     context: context,
                     text: "新規登録",
-                    onTap: () => bottomSheet(
-                      context,
-                      page: SingInSheetWidget(
-                        onTap: (email, password, name) =>
-                            singInUp(email, password, name),
-                      ),
-                      isBackgroundColor: true,
-                      isPOP: true,
-                    ),
+                    onTap: () => bottomSheet(context,
+                        page: SingInSheetWidget(
+                          onTap: (email, password, name) =>
+                              singInUp(email, password, name),
+                        ),
+                        isBackgroundColor: true),
                   ),
                   SizedBox(
                     height: safeAreaHeight * 0.02,

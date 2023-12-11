@@ -9,11 +9,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/constant/color.dart';
+import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/firebase_storage_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view_model/store_list.dart';
+import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 Widget otherWidget(BuildContext context,
@@ -153,7 +154,7 @@ class OnStore extends HookConsumerWidget {
   final StoreData storeData;
   final String distance;
   final void Function() onTap;
-  final void Function() locationonTap;
+  final void Function()? locationonTap;
   final bool isFocus;
 
   @override
@@ -250,25 +251,27 @@ class OnStore extends HookConsumerWidget {
                                   ),
                                 ),
                               ),
-                              Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: GestureDetector(
-                                    onTap: locationonTap,
-                                    child: Container(
-                                      height: safeAreaHeight * 0.04,
-                                      width: safeAreaHeight * 0.04,
-                                      decoration: BoxDecoration(
-                                        color: blueColor,
-                                        border: Border.all(color: Colors.white),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.location_on,
-                                        color: Colors.white,
-                                        size: safeAreaWidth / 18,
-                                      ),
-                                    ),
-                                  )),
+                              if (locationonTap != null) ...{
+                                Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: GestureDetector(
+                                      onTap: locationonTap,
+                                      child: Container(
+                                          height: safeAreaHeight * 0.04,
+                                          width: safeAreaHeight * 0.04,
+                                          decoration: BoxDecoration(
+                                            color: blueColor,
+                                            border: Border.all(
+                                                color: Colors.white
+                                                    .withOpacity(0.8)),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: imgIcon(
+                                              file:
+                                                  "assets/img/location_icon.png",
+                                              padding: safeAreaWidth * 0.008)),
+                                    )),
+                              },
                               Align(
                                   alignment: Alignment.topRight,
                                   child: nTextWithShadow(distance,
@@ -325,7 +328,7 @@ class OnMarker extends HookConsumerWidget {
     required this.task,
   });
   final StoreData storeData;
-  final void Function(Future<Uint8List>) task;
+  final void Function(Future<Uint8List?>) task;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repaintBoundaryKey = GlobalKey(debugLabel: storeData.id);
@@ -335,7 +338,7 @@ class OnMarker extends HookConsumerWidget {
       Future(() async {
         final dbGetData = await storeDataGet(storeData);
         if (dbGetData != null && context.mounted) {
-          final notifier = ref.read(storeDataListNotifierProvider.notifier);
+          final notifier = ref.read(allStoresNotifierProvider.notifier);
           notifier.dataUpDate(dbGetData);
           data.value = dbGetData;
         }
@@ -388,12 +391,16 @@ class OnMarker extends HookConsumerWidget {
     );
   }
 
-  Future<Uint8List> getBytesFromWidget(GlobalKey key) async {
-    final RenderRepaintBoundary boundary =
-        key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-    final ByteData? byteData =
-        await image.toByteData(format: ui.ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
+  Future<Uint8List?> getBytesFromWidget(GlobalKey key) async {
+    try {
+      final RenderRepaintBoundary boundary =
+          key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+      final ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData!.buffer.asUint8List();
+    } catch (e) {
+      return null;
+    }
   }
 }

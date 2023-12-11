@@ -22,12 +22,8 @@ bool isWithin10Km(
   return distance <= 10.0; // 10km以内かどうか
 }
 
-List<StoreData> filterAndSortStores(List<StoreData> stores, LatLng myLocation) {
-  List<StoreData> filteredStores = stores.where((store) {
-    return isWithin10Km(myLocation.latitude, myLocation.longitude,
-        store.location.latitude, store.location.longitude);
-  }).toList();
-  filteredStores.sort((a, b) {
+List<StoreData> sortStoresByDistance(List<StoreData> stores, LatLng myLocation) {
+  stores.sort((a, b) {
     double distanceA = calculateDistance(myLocation.latitude,
         myLocation.longitude, a.location.latitude, a.location.longitude);
     double distanceB = calculateDistance(myLocation.latitude,
@@ -35,5 +31,5 @@ List<StoreData> filterAndSortStores(List<StoreData> stores, LatLng myLocation) {
     return distanceA.compareTo(distanceB);
   });
 
-  return filteredStores;
+  return stores;
 }

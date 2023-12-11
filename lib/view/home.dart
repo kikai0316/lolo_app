@@ -1,23 +1,24 @@
 import 'dart:collection';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/constant/color.dart';
+import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/location_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/home/account.dart';
+import 'package:lolo_app/view/home/search.dart';
 import 'package:lolo_app/view/swiper.dart';
+import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/view_model/marker_list.dart';
-import 'package:lolo_app/view_model/store_list.dart';
+import 'package:lolo_app/view_model/near_stores.dart';
 import 'package:lolo_app/widget/home_widget.dart';
 
 final ScrollController scrollController = ScrollController();
@@ -30,24 +31,42 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
+    final safeAreaWidth = MediaQuery.of(context).size.width;
     final cameraPosition = useState<String?>(userData.id);
     final trySearchWidget = useState<Widget?>(null);
     final storeKeys = useState<Map<String, GlobalKey>>({});
-    final safeAreaWidth = MediaQuery.of(context).size.width;
     final mapController = useState<GoogleMapController?>(null);
     final myLocation =
         useState<LatLng>(LatLng(locationData.latitude, locationData.longitude));
-    final storeList = ref.watch(storeDataListNotifierProvider);
+    final nearStores = ref.watch(nearStoresNotifierProvider);
+    final allStores = ref.watch(allStoresNotifierProvider);
     final markerList = ref.watch(markerListNotifierProvider);
-    final List<StoreData> storeListWhen = storeList.when(
+    final List<String> nearStoresWhen = nearStores.when(
       data: (value) {
-        // print(111);
-        final sortStores = filterAndSortStores(value, myLocation.value);
-        for (int i = 0; i < sortStores.length; i++) {
-          storeKeys.value[sortStores[i].id] = GlobalKey();
+        return value;
+      },
+      error: (e, s) => [],
+      loading: () => [],
+    );
+    final List<StoreData> allStoresWhen = allStores.when(
+      data: (value) {
+        if (value == null) {
+          final notifier = ref.read(allStoresNotifierProvider.notifier);
+          notifier.dbGetStoreData(
+              locationData.latitude, locationData.longitude);
+          return [];
+        } else {
+          List<StoreData> filteredList =
+              value.where((data) => nearStoresWhen.contains(data.id)).toList();
+          final sortStores =
+              sortStoresByDistance(filteredList, myLocation.value);
+          for (int i = 0; i < sortStores.length; i++) {
+            storeKeys.value[sortStores[i].id] = GlobalKey();
+          }
+          storeKeys.value = {...storeKeys.value};
+
+          return sortStores;
         }
-        storeKeys.value = {...storeKeys.value};
-        return sortStores;
       },
       error: (e, s) => [],
       loading: () => [],
@@ -80,21 +99,23 @@ class HomePage extends HookConsumerWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+          extendBody: true,
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.black,
           body: Stack(
             children: [
-              for (int i = 0; i < storeListWhen.length; i++) ...{
+              for (int i = 0; i < allStoresWhen.length; i++) ...{
                 if (!containsMarkerWithId(
-                    markerListWhen, storeListWhen[i].id)) ...{
+                    markerListWhen, allStoresWhen[i].id)) ...{
                   OnMarker(
                       key: ValueKey(
-                        storeListWhen[i].id,
+                        allStoresWhen[i].id,
                       ),
-                      storeData: storeListWhen[i],
+                      storeData: allStoresWhen[i],
                       task: (value) {
                         taskQueue.addTask(() async {
                           final getIMG = await value;
-                          if (context.mounted) {
+                          if (context.mounted && getIMG != null) {
                             final notifier =
                                 ref.read(markerListNotifierProvider.notifier);
                             notifier.addData(
@@ -103,19 +124,19 @@ class HomePage extends HookConsumerWidget {
                                   mapController.value?.animateCamera(
                                     CameraUpdate.newCameraPosition(
                                       CameraPosition(
-                                        target: storeListWhen[i].location,
+                                        target: allStoresWhen[i].location,
                                         zoom: 17.5,
                                         tilt: 10,
                                       ),
                                     ),
                                   );
 
-                                  scrollToStore(storeListWhen[i].id);
+                                  scrollToStore(allStoresWhen[i].id);
                                 },
-                                markerId: MarkerId(storeListWhen[i].id),
+                                markerId: MarkerId(allStoresWhen[i].id),
                                 position: LatLng(
-                                    storeListWhen[i].location.latitude,
-                                    storeListWhen[i].location.longitude),
+                                    allStoresWhen[i].location.latitude,
+                                    allStoresWhen[i].location.longitude),
                                 icon: BitmapDescriptor.fromBytes(getIMG),
                               ),
                             );
@@ -125,62 +146,71 @@ class HomePage extends HookConsumerWidget {
                 }
               },
               GoogleMap(
-                  myLocationButtonEnabled: false,
-                  myLocationEnabled: true,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        myLocation.value.latitude, myLocation.value.longitude),
-                    zoom: 17,
-                    tilt: 10,
-                  ),
-                  onMapCreated: (controller) {
-                    mapController.value = controller;
-                    rootBundle
-                        .loadString("assets/map/map_style.json")
-                        .then((string) {
-                      controller.setMapStyle(string);
-                    });
-                  },
-                  onCameraMove: (CameraPosition position) {
-                    double distanceToUser = Geolocator.distanceBetween(
-                      position.target.latitude,
-                      position.target.longitude,
-                      locationData.latitude,
-                      locationData.longitude,
-                    );
-                    if (distanceToUser < 2) {
-                      cameraPosition.value = userData.id;
-                    } else if (distanceToUser > 20) {
-                      trySearchWidget.value = radiusButton(
-                          context: context,
-                          text: "再検索",
-                          onTap: () {
-                            myLocation.value = LatLng(
-                              position.target.latitude,
-                              position.target.longitude,
-                            );
-                            trySearchWidget.value = null;
-                          });
-                      cameraPosition.value = null;
-                    } else {
-                      for (var marker in markerListWhen) {
-                        double distanceToMarker = Geolocator.distanceBetween(
-                          position.target.latitude,
-                          position.target.longitude,
-                          marker.position.latitude,
-                          marker.position.longitude,
-                        );
-                        if (distanceToMarker < 2) {
-                          cameraPosition.value = marker.markerId.value;
-                          break;
-                        } else {
-                          cameraPosition.value = null;
-                        }
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(
+                      myLocation.value.latitude, myLocation.value.longitude),
+                  zoom: 11,
+                  tilt: 10,
+                ),
+                onMapCreated: (controller) {
+                  mapController.value = controller;
+                  rootBundle
+                      .loadString("assets/map/map_style.json")
+                      .then((string) {
+                    controller.setMapStyle(string);
+                  });
+                },
+                onCameraMove: (CameraPosition position) {
+                  double distanceToUser = Geolocator.distanceBetween(
+                    position.target.latitude,
+                    position.target.longitude,
+                    locationData.latitude,
+                    locationData.longitude,
+                  );
+                  if (distanceToUser < 2) {
+                    cameraPosition.value = userData.id;
+                  } else {
+                    for (var marker in markerListWhen) {
+                      double distanceToMarker = Geolocator.distanceBetween(
+                        position.target.latitude,
+                        position.target.longitude,
+                        marker.position.latitude,
+                        marker.position.longitude,
+                      );
+                      if (distanceToMarker < 2) {
+                        cameraPosition.value = marker.markerId.value;
+                        break;
+                      } else {
+                        cameraPosition.value = null;
                       }
                     }
-                  },
-                  onTap: (value) {},
-                  markers: markerListWhen),
+                  }
+                  // double distanceToNowPosition = Geolocator.distanceBetween(
+                  //   position.target.latitude,
+                  //   position.target.longitude,
+                  //   myLocation.value.latitude,
+                  //   myLocation.value.longitude,
+                  // );
+                  // if (distanceToNowPosition > 200) {
+                  //   // // print(111);
+                  //   // trySearchWidget.value = radiusButton(
+                  //   //     context: context,
+                  //   //     text: "再検索",
+                  //   //     onTap: () {
+                  //   //       myLocation.value = LatLng(
+                  //   //         position.target.latitude,
+                  //   //         position.target.longitude,
+                  //   //       );
+                  //   //       trySearchWidget.value = null;
+                  //   //     });
+                  //   // cameraPosition.value = null;
+                  // }
+                },
+                onTap: (value) {},
+                markers: markerListWhen,
+              ),
               SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -193,13 +223,40 @@ class HomePage extends HookConsumerWidget {
                               right: safeAreaWidth * 0.03,
                               top: safeAreaHeight * (i == 0 ? 0.015 : 0.015)),
                           child: otherWidget(context, onTap: () async {
+                            if (i == 0) {
+                              screenTransitionToTop(
+                                  context, const AccountPage());
+                            }
+                            if (i == 1) {
+                              screenTransitionToTop(
+                                  context,
+                                  SearchPage(
+                                    locationData: LatLng(locationData.latitude,
+                                        locationData.longitude),
+                                    nearStores: allStoresWhen,
+                                    onSearch: (data) async {
+                                      myLocation.value =
+                                          LatLng(data.latitude, data.longitude);
+                                      mapController.value?.animateCamera(
+                                        CameraUpdate.newCameraPosition(
+                                          CameraPosition(
+                                            target: LatLng(
+                                                data.latitude, data.longitude),
+                                            zoom: 16,
+                                            tilt: 10,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ));
+                            }
                             if (i == 2) {
                               mapController.value?.animateCamera(
                                 CameraUpdate.newCameraPosition(
                                   CameraPosition(
                                     target: LatLng(locationData.latitude,
                                         locationData.longitude),
-                                    zoom: 17,
+                                    zoom: 11,
                                     tilt: 10,
                                   ),
                                 ),
@@ -207,15 +264,37 @@ class HomePage extends HookConsumerWidget {
                             }
                           },
                               isLocation: i == 2,
-                              widget: Icon(
-                                i == 0
-                                    ? Icons.settings
-                                    : i == 1
-                                        ? Icons.search
-                                        : Icons.near_me,
-                                color: Colors.white,
-                                size: safeAreaWidth / 10,
-                              )),
+                              widget: Stack(
+                                children: [
+                                  if (i == 0) ...{
+                                    imgIcon(
+                                        file: "assets/img/user_icon.png",
+                                        padding: safeAreaWidth * 0.03),
+                                    userIconWithSettelingIcon(context)
+                                  } else if (i == 1) ...{
+                                    imgIcon(
+                                        file: "assets/img/search_icon.png",
+                                        padding: safeAreaWidth * 0.035)
+                                  } else ...{
+                                    Icon(
+                                      Icons.near_me,
+                                      color: Colors.white,
+                                      size: safeAreaWidth / 10,
+                                    )
+                                  }
+                                ],
+                              )
+
+                              // Icon(
+                              //   i == 0
+                              //       ? Icons.settings
+                              //       : i == 1
+                              //           ? Icons.search
+                              //           : Icons.near_me,
+                              //   color: Colors.white,
+                              //   size: safeAreaWidth / 10,
+                              // )
+                              ),
                         ),
                       }
                     },
@@ -243,7 +322,7 @@ class HomePage extends HookConsumerWidget {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      child: storeListWhen.isEmpty
+                      child: allStoresWhen.isEmpty
                           ? nText("周辺10km圏内に店舗は見当たりません",
                               color: Colors.white,
                               fontSize: safeAreaWidth / 25,
@@ -272,32 +351,31 @@ class HomePage extends HookConsumerWidget {
                             SizedBox(
                               width: safeAreaWidth * 0.05,
                             ),
-                            for (int i = 0; i < storeListWhen.length; i++) ...{
+                            for (int i = 0; i < allStoresWhen.length; i++) ...{
                               if (containsMarkerWithId(
-                                  markerListWhen, storeListWhen[i].id)) ...{
+                                  markerListWhen, allStoresWhen[i].id)) ...{
                                 OnStore(
-                                  key: storeKeys.value[storeListWhen[i].id],
+                                  key: storeKeys.value[allStoresWhen[i].id],
                                   isFocus: cameraPosition.value ==
-                                      storeListWhen[i].id,
-                                  storeData: storeListWhen[i],
+                                      allStoresWhen[i].id,
+                                  storeData: allStoresWhen[i],
                                   locationonTap: () =>
                                       mapController.value?.animateCamera(
                                     CameraUpdate.newCameraPosition(
                                       CameraPosition(
-                                        target: storeListWhen[i].location,
+                                        target: allStoresWhen[i].location,
                                         zoom: 17.5,
                                         tilt: 10,
                                       ),
                                     ),
                                   ),
-                                  distance: calculateDistance(
-                                      storeListWhen[i].location,
+                                  distance: calculateDistanceToString(
+                                      allStoresWhen[i].location,
                                       myLocation.value),
                                   onTap: () => screenTransitionHero(
                                     context,
                                     SwiperPage(
-                                      myUserData: userData,
-                                      storeList: storeListWhen,
+                                      storeList: allStoresWhen,
                                       index: i,
                                     ),
                                   ),
@@ -315,7 +393,7 @@ class HomePage extends HookConsumerWidget {
                     child: Align(
                         alignment: Alignment.bottomCenter,
                         child: trySearchWidget.value!))
-              }
+              },
             ],
           )),
     );
@@ -329,34 +407,27 @@ class HomePage extends HookConsumerWidget {
     return storeList.any((marker) => marker.id == specificId);
   }
 
-  double _toRadians(double degree) {
-    return degree * pi / 180;
-  }
-
-  String calculateDistance(LatLng location1, LatLng location2) {
-    const double earthRadius = 6371.0; // 地球の半径（キロメートル）
-    double lat1 = location1.latitude;
-    double lon1 = location1.longitude;
-    double lat2 = location2.latitude;
-    double lon2 = location2.longitude;
-
-    double dLat = _toRadians(lat2 - lat1);
-    double dLon = _toRadians(lon2 - lon1);
-
-    lat1 = _toRadians(lat1);
-    lat2 = _toRadians(lat2);
-
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        sin(dLon / 2) * sin(dLon / 2) * cos(lat1) * cos(lat2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    final distance = earthRadius * c;
-
-    if (distance < 1) {
-      int distanceInMeters = (distance * 1000).round();
-      return "${(distanceInMeters / 10).round() * 10}m";
-    } else {
-      return "${(distance * 10).round() / 10.0}km";
-    }
+  Widget userIconWithSettelingIcon(BuildContext context) {
+    final safeAreaWidth = MediaQuery.of(context).size.width;
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: EdgeInsets.all(safeAreaWidth * 0.015),
+        child: Container(
+            alignment: Alignment.center,
+            height: safeAreaWidth * 0.06,
+            width: safeAreaWidth * 0.06,
+            decoration: const BoxDecoration(
+              color: blackColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.settings,
+              color: Colors.white,
+              size: safeAreaWidth / 20,
+            )),
+      ),
+    );
   }
 }
 
@@ -379,4 +450,9 @@ class AsyncTaskQueue {
     }
     _isProcessing = false;
   }
+}
+
+Future<Uint8List> loadAssetAsUint8List(String path) async {
+  final ByteData data = await rootBundle.load(path);
+  return data.buffer.asUint8List();
 }

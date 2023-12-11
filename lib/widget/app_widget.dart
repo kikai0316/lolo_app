@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/img_page/img_fullscreen_page.dart';
 
@@ -59,6 +60,38 @@ Widget imgWidget(
           ),
         ),
       ),
+    ),
+  );
+}
+
+PreferredSizeWidget? appBar(BuildContext context, String title) {
+  final safeAreaHeight = safeHeight(context);
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  return AppBar(
+    backgroundColor: Colors.black,
+    automaticallyImplyLeading: false,
+    actions: [
+      Padding(
+        padding: EdgeInsets.only(right: safeAreaWidth * 0.04),
+        child: IconButton(
+          alignment: Alignment.center,
+          splashRadius: safeAreaHeight * 0.03,
+          onPressed: () => Navigator.pop(context),
+          icon: Align(
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.close,
+              size: safeAreaWidth / 13,
+            ),
+          ),
+        ),
+      )
+    ],
+    title: nText(
+      title,
+      color: Colors.white,
+      fontSize: safeAreaWidth / 17,
+      bold: 700,
     ),
   );
 }

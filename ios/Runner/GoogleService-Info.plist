@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCV23dHAIj4D2Oyxp8Nx1pTirnPSodqKDM</string>
+	<string>AIzaSyCAnjx9i27c8o257JG7YYDGncax3D5JDvE</string>
 	<key>GCM_SENDER_ID</key>
-	<string>858756775400</string>
+	<string>487202770935</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.loloApp</string>
 	<key>PROJECT_ID</key>
-	<string>lolo-app-38ca7</string>
+	<string>lolo-app-club</string>
 	<key>STORAGE_BUCKET</key>
-	<string>lolo-app-38ca7.appspot.com</string>
+	<string>lolo-app-club.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:858756775400:ios:5c6fd937e15012c8bef85d</string>
+	<string>1:487202770935:ios:ad29931cc47635d9dde8f2</string>
 </dict>
 </plist>

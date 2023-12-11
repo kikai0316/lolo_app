@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBQ3OI8xebit4a5JKCBuoV1Pi5tOyFaeLg',
-    appId: '1:858756775400:web:5d463c8b2ceeafe1bef85d',
-    messagingSenderId: '858756775400',
-    projectId: 'lolo-app-38ca7',
-    authDomain: 'lolo-app-38ca7.firebaseapp.com',
-    storageBucket: 'lolo-app-38ca7.appspot.com',
-    measurementId: 'G-BGS4Q75NSN',
+    apiKey: 'AIzaSyAdloZTrAODHDRzMq3oxsUFQo6ciSf0d9E',
+    appId: '1:487202770935:web:70f24c70f1829d11dde8f2',
+    messagingSenderId: '487202770935',
+    projectId: 'lolo-app-club',
+    authDomain: 'lolo-app-club.firebaseapp.com',
+    storageBucket: 'lolo-app-club.appspot.com',
+    measurementId: 'G-DEGB0S0GMB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBE-2x-UD7a--UYJO8QwwKkFhYa8rUcvcs',
-    appId: '1:858756775400:android:cd9cdc3ceda052c7bef85d',
-    messagingSenderId: '858756775400',
-    projectId: 'lolo-app-38ca7',
-    storageBucket: 'lolo-app-38ca7.appspot.com',
+    apiKey: 'AIzaSyBreW1wKmn2lkt9DSqshGGUhoJPRg9WLec',
+    appId: '1:487202770935:android:98e9c85a2dc500aadde8f2',
+    messagingSenderId: '487202770935',
+    projectId: 'lolo-app-club',
+    storageBucket: 'lolo-app-club.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCV23dHAIj4D2Oyxp8Nx1pTirnPSodqKDM',
-    appId: '1:858756775400:ios:5c6fd937e15012c8bef85d',
-    messagingSenderId: '858756775400',
-    projectId: 'lolo-app-38ca7',
-    storageBucket: 'lolo-app-38ca7.appspot.com',
+    apiKey: 'AIzaSyCAnjx9i27c8o257JG7YYDGncax3D5JDvE',
+    appId: '1:487202770935:ios:ad29931cc47635d9dde8f2',
+    messagingSenderId: '487202770935',
+    projectId: 'lolo-app-club',
+    storageBucket: 'lolo-app-club.appspot.com',
     iosBundleId: 'com.loloApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCV23dHAIj4D2Oyxp8Nx1pTirnPSodqKDM',
-    appId: '1:858756775400:ios:d5ec063230a0da2bbef85d',
-    messagingSenderId: '858756775400',
-    projectId: 'lolo-app-38ca7',
-    storageBucket: 'lolo-app-38ca7.appspot.com',
+    apiKey: 'AIzaSyCAnjx9i27c8o257JG7YYDGncax3D5JDvE',
+    appId: '1:487202770935:ios:c18abbe4315cbccfdde8f2',
+    messagingSenderId: '487202770935',
+    projectId: 'lolo-app-club',
+    storageBucket: 'lolo-app-club.appspot.com',
     iosBundleId: 'com.example.loloApp.RunnerTests',
   );
 }

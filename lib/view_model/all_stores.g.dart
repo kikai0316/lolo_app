@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'marker_list.dart';
+part of 'all_stores.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$markerListNotifierHash() =>
-    r'd29294a25d8a01be5adbf17ec3fffc0b3734c53a';
+String _$allStoresNotifierHash() => r'178c2e9a6591dd646b4fa98d850f73dcaf79479a';
 
-/// See also [MarkerListNotifier].
-@ProviderFor(MarkerListNotifier)
-final markerListNotifierProvider =
-    AsyncNotifierProvider<MarkerListNotifier, Set<Marker>>.internal(
-  MarkerListNotifier.new,
-  name: r'markerListNotifierProvider',
+/// See also [AllStoresNotifier].
+@ProviderFor(AllStoresNotifier)
+final allStoresNotifierProvider =
+    AsyncNotifierProvider<AllStoresNotifier, List<StoreData>?>.internal(
+  AllStoresNotifier.new,
+  name: r'allStoresNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$markerListNotifierHash,
+      : _$allStoresNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$MarkerListNotifier = AsyncNotifier<Set<Marker>>;
+typedef _$AllStoresNotifier = AsyncNotifier<List<StoreData>?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

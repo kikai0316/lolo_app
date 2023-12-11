@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:lolo_app/model/store_data.dart';
-import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/view/home/on_swiper.dart';
 
 final CarouselSliderController controller = CarouselSliderController();
@@ -14,11 +13,9 @@ class SwiperPage extends HookConsumerWidget {
     super.key,
     required this.index,
     required this.storeList,
-    required this.myUserData,
   });
   final int index;
   final List<StoreData> storeList;
-  final UserData myUserData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageIndex = useState<int>(index + 1);

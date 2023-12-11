@@ -168,7 +168,7 @@ class RequestLocationsPage extends HookConsumerWidget {
                   onTap: () async {
                     await Permission.locationWhenInUse.request();
                     final nextScreenWithLocation =
-                        await nextScreenWithLocationCheck(userData);
+                        await nextScreenWithLocationCheck(userData, ref);
                     if (context.mounted) {
                       screenTransitionNormal(context, nextScreenWithLocation);
                     }
