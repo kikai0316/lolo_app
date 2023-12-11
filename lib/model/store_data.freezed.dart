@@ -1,0 +1,273 @@
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'store_data.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+
+/// @nodoc
+mixin _$StoreData {
+  List<StoryImgType> get postImgList => throw _privateConstructorUsedError;
+  Uint8List? get logo => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get address => throw _privateConstructorUsedError;
+  String get businessHours => throw _privateConstructorUsedError;
+  LatLng get location => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $StoreDataCopyWith<StoreData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $StoreDataCopyWith<$Res> {
+  factory $StoreDataCopyWith(StoreData value, $Res Function(StoreData) then) =
+      _$StoreDataCopyWithImpl<$Res, StoreData>;
+  @useResult
+  $Res call(
+      {List<StoryImgType> postImgList,
+      Uint8List? logo,
+      String id,
+      String name,
+      String address,
+      String businessHours,
+      LatLng location});
+}
+
+/// @nodoc
+class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
+    implements $StoreDataCopyWith<$Res> {
+  _$StoreDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postImgList = null,
+    Object? logo = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? address = null,
+    Object? businessHours = null,
+    Object? location = null,
+  }) {
+    return _then(_value.copyWith(
+      postImgList: null == postImgList
+          ? _value.postImgList
+          : postImgList // ignore: cast_nullable_to_non_nullable
+              as List<StoryImgType>,
+      logo: freezed == logo
+          ? _value.logo
+          : logo // ignore: cast_nullable_to_non_nullable
+              as Uint8List?,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      businessHours: null == businessHours
+          ? _value.businessHours
+          : businessHours // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as LatLng,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$StoreDataImplCopyWith<$Res>
+    implements $StoreDataCopyWith<$Res> {
+  factory _$$StoreDataImplCopyWith(
+          _$StoreDataImpl value, $Res Function(_$StoreDataImpl) then) =
+      __$$StoreDataImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {List<StoryImgType> postImgList,
+      Uint8List? logo,
+      String id,
+      String name,
+      String address,
+      String businessHours,
+      LatLng location});
+}
+
+/// @nodoc
+class __$$StoreDataImplCopyWithImpl<$Res>
+    extends _$StoreDataCopyWithImpl<$Res, _$StoreDataImpl>
+    implements _$$StoreDataImplCopyWith<$Res> {
+  __$$StoreDataImplCopyWithImpl(
+      _$StoreDataImpl _value, $Res Function(_$StoreDataImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? postImgList = null,
+    Object? logo = freezed,
+    Object? id = null,
+    Object? name = null,
+    Object? address = null,
+    Object? businessHours = null,
+    Object? location = null,
+  }) {
+    return _then(_$StoreDataImpl(
+      postImgList: null == postImgList
+          ? _value._postImgList
+          : postImgList // ignore: cast_nullable_to_non_nullable
+              as List<StoryImgType>,
+      logo: freezed == logo
+          ? _value.logo
+          : logo // ignore: cast_nullable_to_non_nullable
+              as Uint8List?,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      businessHours: null == businessHours
+          ? _value.businessHours
+          : businessHours // ignore: cast_nullable_to_non_nullable
+              as String,
+      location: null == location
+          ? _value.location
+          : location // ignore: cast_nullable_to_non_nullable
+              as LatLng,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$StoreDataImpl implements _StoreData {
+  const _$StoreDataImpl(
+      {required final List<StoryImgType> postImgList,
+      required this.logo,
+      required this.id,
+      required this.name,
+      required this.address,
+      required this.businessHours,
+      required this.location})
+      : _postImgList = postImgList;
+
+  final List<StoryImgType> _postImgList;
+  @override
+  List<StoryImgType> get postImgList {
+    if (_postImgList is EqualUnmodifiableListView) return _postImgList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_postImgList);
+  }
+
+  @override
+  final Uint8List? logo;
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String address;
+  @override
+  final String businessHours;
+  @override
+  final LatLng location;
+
+  @override
+  String toString() {
+    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, location: $location)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$StoreDataImpl &&
+            const DeepCollectionEquality()
+                .equals(other._postImgList, _postImgList) &&
+            const DeepCollectionEquality().equals(other.logo, logo) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.address, address) || other.address == address) &&
+            (identical(other.businessHours, businessHours) ||
+                other.businessHours == businessHours) &&
+            (identical(other.location, location) ||
+                other.location == location));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_postImgList),
+      const DeepCollectionEquality().hash(logo),
+      id,
+      name,
+      address,
+      businessHours,
+      location);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$StoreDataImplCopyWith<_$StoreDataImpl> get copyWith =>
+      __$$StoreDataImplCopyWithImpl<_$StoreDataImpl>(this, _$identity);
+}
+
+abstract class _StoreData implements StoreData {
+  const factory _StoreData(
+      {required final List<StoryImgType> postImgList,
+      required final Uint8List? logo,
+      required final String id,
+      required final String name,
+      required final String address,
+      required final String businessHours,
+      required final LatLng location}) = _$StoreDataImpl;
+
+  @override
+  List<StoryImgType> get postImgList;
+  @override
+  Uint8List? get logo;
+  @override
+  String get id;
+  @override
+  String get name;
+  @override
+  String get address;
+  @override
+  String get businessHours;
+  @override
+  LatLng get location;
+  @override
+  @JsonKey(ignore: true)
+  _$$StoreDataImplCopyWith<_$StoreDataImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
