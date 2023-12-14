@@ -29,7 +29,7 @@ Future<StoreData?> storeDataGet(StoreData storeData) async {
         name: storeData.name,
         location: storeData.location,
         address: storeData.address,
-        businessHours: "",
+        businessHours: storeData.address,
       );
     } else {
       return null;

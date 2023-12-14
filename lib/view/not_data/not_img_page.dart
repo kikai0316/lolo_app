@@ -49,11 +49,11 @@ class NotImgPage extends HookConsumerWidget {
         img.value = data.buffer.asUint8List();
       }
       final setData = UserData(
-        img: img.value,
-        id: userData.id,
-        name: userData.name,
-        birthday: userData.birthday,
-      );
+          img: img.value,
+          id: userData.id,
+          name: userData.name,
+          birthday: userData.birthday,
+          storeData: userData.storeData);
       final iswWite = await writeUserData(setData);
       if (iswWite) {
         final nextScreenWhisUserData = nextScreenWhisUserDataCheck(setData);
@@ -61,8 +61,9 @@ class NotImgPage extends HookConsumerWidget {
           // ignore: use_build_context_synchronously
           screenTransitionNormal(context, nextScreenWhisUserData);
         } else {
-          final nextScreenWithLocation =
-              await nextScreenWithLocationCheck(userData, ref);
+          final nextScreenWithLocation = await nextScreenWithLocationCheck(
+            userData,
+          );
           if (context.mounted) {
             screenTransitionNormal(context, nextScreenWithLocation);
           }

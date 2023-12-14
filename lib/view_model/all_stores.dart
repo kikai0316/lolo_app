@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/firebase_firestore_utility.dart';
@@ -17,8 +16,8 @@ class AllStoresNotifier extends _$AllStoresNotifier {
   Future<List<StoreData>?> build() async {
     final isPermission = await checkLocationPermission();
     if (isPermission) {
-      final currentPosition = await Geolocator.getCurrentPosition();
-      dbGetStoreData(currentPosition.latitude, currentPosition.longitude);
+      // final currentPosition = await Geolocator.getCurrentPosition();
+      // dbGetStoreData(currentPosition.latitude, currentPosition.longitude);
       return [];
     } else {
       return null;

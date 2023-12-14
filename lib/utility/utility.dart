@@ -9,7 +9,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/user_data.dart';
@@ -105,7 +104,8 @@ Future getMobileImage({
 }
 
 Future<Widget> nextScreenWithLocationCheck(
-    UserData userData, WidgetRef ref) async {
+  UserData userData,
+) async {
   final serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     return const NotLocationPermissionPage();

@@ -20,6 +20,7 @@ mixin _$UserData {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get birthday => throw _privateConstructorUsedError;
+  StoreData? get storeData => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $UserDataCopyWith<UserData> get copyWith =>
@@ -31,7 +32,14 @@ abstract class $UserDataCopyWith<$Res> {
   factory $UserDataCopyWith(UserData value, $Res Function(UserData) then) =
       _$UserDataCopyWithImpl<$Res, UserData>;
   @useResult
-  $Res call({Uint8List? img, String id, String name, String birthday});
+  $Res call(
+      {Uint8List? img,
+      String id,
+      String name,
+      String birthday,
+      StoreData? storeData});
+
+  $StoreDataCopyWith<$Res>? get storeData;
 }
 
 /// @nodoc
@@ -51,6 +59,7 @@ class _$UserDataCopyWithImpl<$Res, $Val extends UserData>
     Object? id = null,
     Object? name = null,
     Object? birthday = null,
+    Object? storeData = freezed,
   }) {
     return _then(_value.copyWith(
       img: freezed == img
@@ -69,7 +78,23 @@ class _$UserDataCopyWithImpl<$Res, $Val extends UserData>
           ? _value.birthday
           : birthday // ignore: cast_nullable_to_non_nullable
               as String,
+      storeData: freezed == storeData
+          ? _value.storeData
+          : storeData // ignore: cast_nullable_to_non_nullable
+              as StoreData?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $StoreDataCopyWith<$Res>? get storeData {
+    if (_value.storeData == null) {
+      return null;
+    }
+
+    return $StoreDataCopyWith<$Res>(_value.storeData!, (value) {
+      return _then(_value.copyWith(storeData: value) as $Val);
+    });
   }
 }
 
@@ -81,7 +106,15 @@ abstract class _$$UserDataImplCopyWith<$Res>
       __$$UserDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Uint8List? img, String id, String name, String birthday});
+  $Res call(
+      {Uint8List? img,
+      String id,
+      String name,
+      String birthday,
+      StoreData? storeData});
+
+  @override
+  $StoreDataCopyWith<$Res>? get storeData;
 }
 
 /// @nodoc
@@ -99,6 +132,7 @@ class __$$UserDataImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? birthday = null,
+    Object? storeData = freezed,
   }) {
     return _then(_$UserDataImpl(
       img: freezed == img
@@ -117,6 +151,10 @@ class __$$UserDataImplCopyWithImpl<$Res>
           ? _value.birthday
           : birthday // ignore: cast_nullable_to_non_nullable
               as String,
+      storeData: freezed == storeData
+          ? _value.storeData
+          : storeData // ignore: cast_nullable_to_non_nullable
+              as StoreData?,
     ));
   }
 }
@@ -128,7 +166,8 @@ class _$UserDataImpl implements _UserData {
       {required this.img,
       required this.id,
       required this.name,
-      required this.birthday});
+      required this.birthday,
+      required this.storeData});
 
   @override
   final Uint8List? img;
@@ -138,10 +177,12 @@ class _$UserDataImpl implements _UserData {
   final String name;
   @override
   final String birthday;
+  @override
+  final StoreData? storeData;
 
   @override
   String toString() {
-    return 'UserData(img: $img, id: $id, name: $name, birthday: $birthday)';
+    return 'UserData(img: $img, id: $id, name: $name, birthday: $birthday, storeData: $storeData)';
   }
 
   @override
@@ -153,12 +194,14 @@ class _$UserDataImpl implements _UserData {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.birthday, birthday) ||
-                other.birthday == birthday));
+                other.birthday == birthday) &&
+            (identical(other.storeData, storeData) ||
+                other.storeData == storeData));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(img), id, name, birthday);
+      const DeepCollectionEquality().hash(img), id, name, birthday, storeData);
 
   @JsonKey(ignore: true)
   @override
@@ -172,7 +215,8 @@ abstract class _UserData implements UserData {
       {required final Uint8List? img,
       required final String id,
       required final String name,
-      required final String birthday}) = _$UserDataImpl;
+      required final String birthday,
+      required final StoreData? storeData}) = _$UserDataImpl;
 
   @override
   Uint8List? get img;
@@ -182,6 +226,8 @@ abstract class _UserData implements UserData {
   String get name;
   @override
   String get birthday;
+  @override
+  StoreData? get storeData;
   @override
   @JsonKey(ignore: true)
   _$$UserDataImplCopyWith<_$UserDataImpl> get copyWith =>

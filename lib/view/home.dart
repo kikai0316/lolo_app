@@ -12,8 +12,8 @@ import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/location_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
+import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/home/account.dart';
 import 'package:lolo_app/view/home/search.dart';
 import 'package:lolo_app/view/swiper.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
@@ -224,8 +224,9 @@ class HomePage extends HookConsumerWidget {
                               top: safeAreaHeight * (i == 0 ? 0.015 : 0.015)),
                           child: otherWidget(context, onTap: () async {
                             if (i == 0) {
-                              screenTransitionToTop(
-                                  context, const AccountPage());
+                              // screenTransitionToTop(
+                              //     context, const AccountPage());
+                              loginSuccessSnackbar(context);
                             }
                             if (i == 1) {
                               screenTransitionToTop(

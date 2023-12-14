@@ -229,11 +229,11 @@ class ProfileSetting extends HookConsumerWidget {
                           isLoading.value = true;
                           primaryFocus?.unfocus();
                           final setData = UserData(
-                            img: userData.img,
-                            id: userData.id,
-                            name: editName.value,
-                            birthday: editBirthday.value,
-                          );
+                              img: userData.img,
+                              id: userData.id,
+                              name: editName.value,
+                              birthday: editBirthday.value,
+                              storeData: userData.storeData);
                           final bool localWrite = await writeUserData(setData);
                           if (localWrite) {
                             onSave(setData);

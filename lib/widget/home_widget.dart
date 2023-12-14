@@ -89,7 +89,7 @@ class MainScreenWidget extends HookConsumerWidget {
                 },
                 aspectRatio: 3.2 / 1,
                 viewportFraction: 1,
-                autoPlay: true,
+                // autoPlay: true,
                 enableInfiniteScroll: true,
                 autoPlayCurve: Curves.fastOutSlowIn,
                 disableCenter: true),

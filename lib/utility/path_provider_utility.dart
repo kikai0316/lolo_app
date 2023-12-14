@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lolo_app/model/user_data.dart';
+import 'package:lolo_app/utility/firebase_firestore_utility.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<String?> get _localPath async {
@@ -35,6 +36,7 @@ Future<bool> writeUserData(
         "name": data.name,
         "img": toBase64,
         "birthday": data.birthday,
+        "storeData": data.storeData == null ? "" : data.storeData!.id,
       };
       final jsonList = jsonEncode(setData);
       await file.writeAsString(jsonList);
@@ -48,24 +50,29 @@ Future<bool> writeUserData(
 }
 
 Future<UserData?> readUserData() async {
-  final file = await _localFile("user");
-  if (file != null) {
-    try {
-      final String contents = await file.readAsString();
-      final toDecode = jsonDecode(contents) as Map<String, dynamic>;
-      final imgListDecode = toDecode["img"] == ""
-          ? null
-          : base64Decode(toDecode["img"] as String);
-      final setData = UserData(
-          id: toDecode["id"] as String,
-          name: toDecode["name"] as String,
-          birthday: toDecode["birthday"] as String,
-          img: imgListDecode);
-      return setData;
-    } catch (e) {
-      return null;
-    }
-  } else {
+  try {
+    final file = await _localFile("user");
+    if (file == null) return null;
+    final User? user = FirebaseAuth.instance.currentUser;
+    final String contents = await file.readAsString();
+    final Map<String, dynamic> toDecode = jsonDecode(contents);
+    final imgListDecode =
+        toDecode["img"] == "" ? null : base64Decode(toDecode["img"]);
+    final String id = toDecode["id"] ?? "";
+    final String name = toDecode["name"] ?? "";
+    final String birthday = toDecode["birthday"] ?? "";
+    final getStoreID = toDecode["storeData"] ?? "";
+    final getDB = getStoreID.isNotEmpty && (user?.uid ?? "") == getStoreID
+        ? await fetchStoreDetails(getStoreID)
+        : null;
+    return UserData(
+      id: id,
+      name: name,
+      birthday: birthday,
+      img: imgListDecode,
+      storeData: getDB,
+    );
+  } catch (e) {
     return null;
   }
 }
