@@ -1,17 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
-import 'package:lolo_app/model/user_data.dart';
+import 'package:lolo_app/model/store_data.dart';
+import 'package:lolo_app/utility/firebase_firestore_utility.dart';
+import 'package:lolo_app/utility/firebase_storage_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/account/on_edit_business_hour.dart';
 import 'package:lolo_app/view/account/on_edit_text_sheet.dart';
 import 'package:lolo_app/view/img_page/logo_confirmation_page.dart';
 import 'package:lolo_app/view_model/user_data.dart';
@@ -19,39 +22,37 @@ import 'package:lolo_app/widget/account_widget.dart';
 
 TextEditingController? textController;
 
-class ProfileSetting extends HookConsumerWidget {
-  const ProfileSetting({
+class StoreSetting extends HookConsumerWidget {
+  const StoreSetting({
     super.key,
-    required this.userData,
+    required this.storeData,
   });
-  final UserData userData;
+  final StoreData storeData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final isLoading = useState<bool>(false);
-    final editName = useState<String>(userData.name);
-    final editLogo = useState<Uint8List?>(userData.img);
-    final editBirthday = useState<String>(userData.birthday);
+    final editName = useState<String>(storeData.name);
+    final editAddress = useState<String>(storeData.address);
+    final editBusinessHour = useState<String>(storeData.businessHours);
+    final editLocation = useState<LatLng>(storeData.location);
+    final editLogo = useState<Uint8List?>(storeData.logo);
+    final editSearchWord = useState<List<String>>(storeData.searchWord);
     final User? user = FirebaseAuth.instance.currentUser;
     final dataList = [
       editName.value,
-      formatDateString(
-        editBirthday.value,
-      ),
+      editAddress.value,
+      "${editLocation.value.latitude.toStringAsFixed(3)}°N,${editLocation.value.longitude.toStringAsFixed(3)}°E",
+      editBusinessHour.value.replaceAll("@", " 〜 "),
+      editSearchWord.value.join(', '),
       user?.email ?? "取得エラー",
     ];
-    DateTime parseDate(String input) {
-      final year = int.parse(input.substring(0, 4));
-      final month = int.parse(input.substring(4, 6));
-      final day = int.parse(input.substring(6, 8));
-      return DateTime(year, month, day);
-    }
 
     bool isDataCheck() {
-      if (userData.name == editName.value &&
-          userData.birthday == editBirthday.value &&
-          editLogo.value == userData.img) {
+      if (storeData.logo == editLogo.value &&
+          storeData.businessHours == editBusinessHour.value &&
+          storeData.searchWord == editSearchWord.value) {
         return true;
       } else {
         return false;
@@ -79,6 +80,60 @@ class ProfileSetting extends HookConsumerWidget {
       isLoading.value = false;
     }
 
+    Future<void> dbUpdata() async {
+      Map<String, dynamic> setData = {};
+      if (storeData.logo != editLogo.value) {
+        await upLoadMain(editLogo.value!, storeData.id);
+      }
+      if (storeData.businessHours != editBusinessHour.value) {
+        setData["business_hour"] = editBusinessHour.value;
+      }
+      if (storeData.searchWord != editSearchWord.value) {
+        setData["search_word"] = editSearchWord.value;
+      }
+      if (setData.isNotEmpty) {
+        final isDBUpData = await upDataStore(setData, storeData.id);
+        if (isDBUpData) {
+          final setStoreData = StoreData(
+              postImgList: storeData.postImgList,
+              logo: editLogo.value,
+              id: storeData.id,
+              name: editName.value,
+              address: editAddress.value,
+              businessHours: editBusinessHour.value,
+              searchWord: editSearchWord.value,
+              location: editLocation.value);
+          final notifier = ref.read(userDataNotifierProvider.notifier);
+          final isDataUPDate = await notifier.addStoreData(setStoreData);
+          if (isDataUPDate && context.mounted) {
+            isLoading.value = false;
+            Navigator.pop(context);
+            loginSuccessSnackbar(
+              context,
+              "データ更新が正常に完了しました",
+            );
+          }
+        } else {
+          if (context.mounted) {
+            isLoading.value = false;
+            errorSnackbar(
+              context,
+              message: "システムエラーが発生しました。\n少し時間を置いてからもう一度お試しください。",
+            );
+          }
+        }
+      } else {
+        if (context.mounted) {
+          isLoading.value = false;
+          Navigator.pop(context);
+          loginSuccessSnackbar(
+            context,
+            "データ更新が正常に完了しました",
+          );
+        }
+      }
+    }
+
     return Stack(
       children: [
         Scaffold(
@@ -88,7 +143,7 @@ class ProfileSetting extends HookConsumerWidget {
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: nText(
-              "プロフィール編集",
+              "店舗アカウント情報",
               color: Colors.white,
               fontSize: safeAreaWidth / 20,
               bold: 700,
@@ -148,7 +203,7 @@ class ProfileSetting extends HookConsumerWidget {
                               children: [
                                 for (int i = 0; i < dataList.length; i++) ...{
                                   Opacity(
-                                    opacity: i != 2 ? 1 : 0.3,
+                                    opacity: i == 4 || i == 3 ? 1 : 0.3,
                                     child: settingWidget(
                                       isOnlyBottomRadius:
                                           i == dataList.length - 1,
@@ -159,17 +214,12 @@ class ProfileSetting extends HookConsumerWidget {
                                         height: safeAreaHeight * 0.1,
                                         width: safeAreaWidth * 0.5,
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
                                           children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                right: safeAreaWidth * 0.02,
-                                              ),
+                                            Expanded(
                                               child: Container(
+                                                height: safeAreaHeight * 0.1,
                                                 alignment:
                                                     Alignment.centerRight,
-                                                width: safeAreaWidth * 0.4,
                                                 child: FittedBox(
                                                   fit: BoxFit.fitWidth,
                                                   child: nText(
@@ -182,55 +232,65 @@ class ProfileSetting extends HookConsumerWidget {
                                                 ),
                                               ),
                                             ),
-                                            if (i != 2)
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: Colors.white
-                                                    .withOpacity(0.8),
-                                                size: safeAreaWidth / 21,
+                                            if (i != dataList.length - 1)
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  left: safeAreaWidth * 0.02,
+                                                ),
+                                                child: Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: Colors.white
+                                                      .withOpacity(0.8),
+                                                  size: safeAreaWidth / 21,
+                                                ),
                                               ),
                                           ],
                                         ),
                                       ),
-                                      onTap: () {
-                                        if (i == 0) {
-                                          textController =
-                                              TextEditingController(
-                                                  text: editName.value);
-                                          bottomSheet(context,
-                                              page: StringEditSheet(
-                                                title: "ユーザー名を入力",
-                                                initData: editName.value,
-                                                controller: textController!,
-                                                onTap: () async {
-                                                  if (i == 0) {
-                                                    Navigator.pop(context);
-                                                    editName.value =
-                                                        textController!.text;
-                                                  }
-                                                },
-                                              ),
-                                              isBackgroundColor: true);
-                                        }
-                                        if (i == 1) {
-                                          primaryFocus?.unfocus();
-                                          DatePicker.showDatePicker(
-                                            context,
-                                            minTime: DateTime(1950),
-                                            maxTime: DateTime(2022, 8, 17),
-                                            currentTime: parseDate(
-                                              editBirthday.value,
-                                            ),
-                                            locale: LocaleType.jp,
-                                            onConfirm: (date) {
-                                              editBirthday.value =
-                                                  '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
-                                            },
-                                          );
-                                        }
-                                      },
+                                      onTap: i == 4 || i == 3
+                                          ? () {
+                                              if (i == 3) {
+                                                bottomSheet(context,
+                                                    page: BusinessHourEditSheet(
+                                                        initData:
+                                                            editBusinessHour
+                                                                .value,
+                                                        onTap: (value) {
+                                                          Navigator.pop(
+                                                              context);
+                                                          editBusinessHour
+                                                              .value = value;
+                                                        }),
+                                                    isBackgroundColor: true);
+                                              }
+                                              if (i == 4) {
+                                                textController =
+                                                    TextEditingController(
+                                                  text: editSearchWord.value
+                                                      .join(","),
+                                                );
+                                                bottomSheet(context,
+                                                    page: StringEditSheet(
+                                                      title: "検索キーワード",
+                                                      initData: editSearchWord
+                                                          .value
+                                                          .join(","),
+                                                      controller:
+                                                          textController!,
+                                                      onTap: () async {
+                                                        Navigator.pop(context);
+                                                        editSearchWord.value =
+                                                            textController!.text
+                                                                .split(RegExp(
+                                                                    ',|、'));
+                                                      },
+                                                    ),
+                                                    isBackgroundColor: true);
+                                              }
+                                            }
+                                          : null,
                                       context: context,
-                                      iconText: profileSettingTitle[i],
+                                      iconText: storeSettingTitle[i],
                                     ),
                                   ),
                                 },
@@ -256,31 +316,7 @@ class ProfileSetting extends HookConsumerWidget {
                         if (!isDataCheck()) {
                           isLoading.value = true;
                           primaryFocus?.unfocus();
-                          final setData = UserData(
-                              img: editLogo.value,
-                              id: userData.id,
-                              name: editName.value,
-                              birthday: editBirthday.value,
-                              storeData: userData.storeData);
-                          final notifier =
-                              ref.read(userDataNotifierProvider.notifier);
-                          final isUpData = await notifier.upData(setData);
-                          if (context.mounted) {
-                            isLoading.value = false;
-                            if (isUpData) {
-                              Navigator.pop(context);
-                              loginSuccessSnackbar(
-                                context,
-                                "データ更新が正常に完了しました",
-                              );
-                            } else {
-                              errorSnackbar(
-                                context,
-                                message:
-                                    "システムエラーが発生しました。\n少し時間を置いてからもう一度お試しください。",
-                              );
-                            }
-                          }
+                          dbUpdata();
                         }
                       },
                     ),
@@ -306,8 +342,12 @@ class ProfileSetting extends HookConsumerWidget {
   }
 }
 
-final profileSettingTitle = [
-  "ユーザー名",
-  "生年月日",
-  "メールアドレス",
+final storeSettingTitle = [
+  "店舗名",
+  "住所",
+  "座標",
+  "営業開始",
+  "営業終了",
+  "検索キーワード",
+  "店舗コード",
 ];

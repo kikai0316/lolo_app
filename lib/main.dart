@@ -52,7 +52,9 @@ class MyApp extends HookConsumerWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const WithIconInLoadingPage();
             } else if (snapshot.hasError) {
-              return const StartPage();
+              return const StartPage(
+                isGeneral: true,
+              );
             }
           }
           return const InitialWidget();
@@ -82,14 +84,23 @@ class InitialWidget extends HookConsumerWidget {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const WithIconInLoadingPage();
                     } else if (snapshot.hasError) {
-                      return const StartPage();
+                      return const StartPage(
+                        isGeneral: true,
+                      );
                     }
                   }
-                  return snapshot.data ?? const StartPage();
+                  return snapshot.data ??
+                      const StartPage(
+                        isGeneral: true,
+                      );
                 },
               )
-            : const StartPage(),
-        error: (e, s) => const StartPage(),
+            : const StartPage(
+                isGeneral: true,
+              ),
+        error: (e, s) => const StartPage(
+              isGeneral: true,
+            ),
         loading: () => const WithIconInLoadingPage());
   }
 }

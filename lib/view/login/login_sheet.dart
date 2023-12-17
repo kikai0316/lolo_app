@@ -45,10 +45,10 @@ class LoginSheetWidget extends HookConsumerWidget {
                         Padding(
                           padding: EdgeInsets.only(top: safeAreaHeight * 0.03),
                           child: LoginTextField(
-                            icon: Icons.email,
+                            icon: Icons.storefront,
                             controller: controllerList[0],
                             isError: errorMessage.value != null,
-                            subText: "メールアドレスを入力...",
+                            subText: "店舗コードを入力...",
                             onChanged: (value) {
                               errorMessage.value = null;
                             },

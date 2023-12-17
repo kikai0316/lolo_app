@@ -23,18 +23,29 @@ Future<StoreData?> storeDataGet(StoreData storeData) async {
         }
       }
       return StoreData(
-        postImgList: imgList,
-        logo: mainImgGet,
-        id: storeData.id,
-        name: storeData.name,
-        location: storeData.location,
-        address: storeData.address,
-        businessHours: storeData.address,
-      );
+          postImgList: imgList,
+          logo: mainImgGet,
+          id: storeData.id,
+          name: storeData.name,
+          location: storeData.location,
+          address: storeData.address,
+          businessHours: storeData.address,
+          searchWord: storeData.searchWord);
     } else {
       return null;
     }
   } on FirebaseException {
     return null;
+  }
+}
+
+Future<bool> upLoadMain(Uint8List img, String id) async {
+  try {
+    await FirebaseStorage.instance
+        .ref("store/$id/main/${DateTime.now()}")
+        .putData(img);
+    return true;
+  } on FirebaseException {
+    return false;
   }
 }

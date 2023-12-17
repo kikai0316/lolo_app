@@ -14,6 +14,7 @@ class StoreData with _$StoreData {
       required String name,
       required String address,
       required String businessHours,
+      required List<String> searchWord,
       required LatLng location}) = _StoreData;
 }
 

@@ -12,9 +12,9 @@ import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/location_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
-import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/home/search.dart';
+import 'package:lolo_app/view/account.dart';
+import 'package:lolo_app/view/search.dart';
 import 'package:lolo_app/view/swiper.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/view_model/marker_list.dart';
@@ -155,12 +155,14 @@ class HomePage extends HookConsumerWidget {
                   tilt: 10,
                 ),
                 onMapCreated: (controller) {
-                  mapController.value = controller;
-                  rootBundle
-                      .loadString("assets/map/map_style.json")
-                      .then((string) {
-                    controller.setMapStyle(string);
-                  });
+                  if (context.mounted) {
+                    mapController.value = controller;
+                    rootBundle
+                        .loadString("assets/map/map_style.json")
+                        .then((string) {
+                      controller.setMapStyle(string);
+                    });
+                  }
                 },
                 onCameraMove: (CameraPosition position) {
                   double distanceToUser = Geolocator.distanceBetween(
@@ -221,12 +223,11 @@ class HomePage extends HookConsumerWidget {
                         Padding(
                           padding: EdgeInsets.only(
                               right: safeAreaWidth * 0.03,
-                              top: safeAreaHeight * (i == 0 ? 0.015 : 0.015)),
+                              top: safeAreaHeight * 0.015),
                           child: otherWidget(context, onTap: () async {
                             if (i == 0) {
-                              // screenTransitionToTop(
-                              //     context, const AccountPage());
-                              loginSuccessSnackbar(context);
+                              screenTransitionToTop(
+                                  context, const AccountPage());
                             }
                             if (i == 1) {
                               screenTransitionToTop(
@@ -284,21 +285,16 @@ class HomePage extends HookConsumerWidget {
                                     )
                                   }
                                 ],
-                              )
-
-                              // Icon(
-                              //   i == 0
-                              //       ? Icons.settings
-                              //       : i == 1
-                              //           ? Icons.search
-                              //           : Icons.near_me,
-                              //   color: Colors.white,
-                              //   size: safeAreaWidth / 10,
-                              // )
-                              ),
+                              )),
                         ),
                       }
                     },
+                    Padding(
+                      padding: EdgeInsets.only(
+                          right: safeAreaWidth * 0.03,
+                          top: safeAreaHeight * 0.015),
+                      child: storeWidget(context, onTap: () {}),
+                    )
                   ],
                 ),
               ),

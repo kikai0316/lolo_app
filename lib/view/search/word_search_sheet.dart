@@ -44,6 +44,7 @@ class WordSearchSheetWidget extends HookConsumerWidget {
             postImgList: [],
             logo: null,
             id: doc.id,
+            searchWord: [],
             name: nullCheckString(data["name"]) ?? "未設定",
             address: nullCheckString(data["address"]) ?? "未設定",
             businessHours: nullCheckString(data["business_hour"]) ?? "",

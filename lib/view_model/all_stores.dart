@@ -78,11 +78,14 @@ class AllStoresNotifier extends _$AllStoresNotifier {
             (userData) => userData.id == change.id,
           );
           if (index == -1) {
-            final GeoPoint getGeo = data!['geo']["geopoint"] as GeoPoint;
+            List<String> searchWordList =
+                List<String>.from(data!['search_word'] ?? []);
+            final GeoPoint getGeo = data['geo']["geopoint"] as GeoPoint;
             newStoreList.add(StoreData(
               postImgList: [],
               logo: null,
               id: change.id,
+              searchWord: searchWordList,
               name: nullCheckString(data["name"]) ?? "未設定",
               address: nullCheckString(data["address"]) ?? "未設定",
               businessHours: nullCheckString(data["business_hour"]) ?? "",

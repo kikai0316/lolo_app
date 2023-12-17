@@ -44,24 +44,45 @@ Future<StoreData?> toStoreData(Map<String, dynamic> dbData, String id) async {
       name: "",
       address: "",
       businessHours: "",
+      searchWord: [],
       location: const LatLng(0, 0),
     ));
-
     if (dbGetData?.logo == null) return null;
-
     var getGeo = dbData['geo']["geopoint"] as GeoPoint?;
     if (getGeo == null) return null;
-
+    List<String> searchWordList =
+        List<String>.from(dbData['search_word'] ?? []);
     return StoreData(
       postImgList: dbGetData!.postImgList,
       logo: dbGetData.logo,
       id: id,
-      name: dbData["name"],
-      address: dbData["address"],
-      businessHours: dbData["businessHours"],
+      name: dbData["name"] ?? "",
+      searchWord: searchWordList,
+      address: dbData["address"] ?? "",
+      businessHours: dbData["businessHours"] ?? "",
       location: LatLng(getGeo.latitude, getGeo.longitude),
     );
   } catch (e) {
     return null;
+  }
+}
+
+Future<bool> setDataStore(Map<String, dynamic> setData, String id) async {
+  try {
+    final storedb = FirebaseFirestore.instance.collection("store").doc(id);
+    await storedb.set(setData);
+    return true;
+  } on FirebaseException {
+    return false;
+  }
+}
+
+Future<bool> upDataStore(Map<String, dynamic> setData, String id) async {
+  try {
+    final storedb = FirebaseFirestore.instance.collection("store").doc(id);
+    await storedb.update(setData);
+    return true;
+  } on FirebaseException {
+    return false;
   }
 }

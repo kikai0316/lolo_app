@@ -64,11 +64,12 @@ Widget imgWidget(
   );
 }
 
-PreferredSizeWidget? appBar(BuildContext context, String title) {
+PreferredSizeWidget? appBar(BuildContext context, String? title) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
   return AppBar(
-    backgroundColor: Colors.black,
+    backgroundColor: Colors.transparent,
+    elevation: 0,
     automaticallyImplyLeading: false,
     actions: [
       Padding(
@@ -87,11 +88,13 @@ PreferredSizeWidget? appBar(BuildContext context, String title) {
         ),
       )
     ],
-    title: nText(
-      title,
-      color: Colors.white,
-      fontSize: safeAreaWidth / 17,
-      bold: 700,
-    ),
+    title: title == null
+        ? null
+        : nText(
+            title,
+            color: Colors.white,
+            fontSize: safeAreaWidth / 17,
+            bold: 700,
+          ),
   );
 }

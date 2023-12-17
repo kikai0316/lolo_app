@@ -6,7 +6,7 @@ part of 'all_stores.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$allStoresNotifierHash() => r'8962a192b544bedcde5a8f482f46930d3c786990';
+String _$allStoresNotifierHash() => r'e6e98ccd9ff086080f21a33373dadb3d14cee118';
 
 /// See also [AllStoresNotifier].
 @ProviderFor(AllStoresNotifier)

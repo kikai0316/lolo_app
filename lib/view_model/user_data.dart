@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
+import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
+import 'package:lolo_app/utility/firebase_firestore_utility.dart';
 import 'package:lolo_app/utility/path_provider_utility.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'user_data.g.dart';
@@ -11,9 +14,17 @@ class UserDataNotifier extends _$UserDataNotifier {
   Future<UserData?> build() async {
     final result = await LineSDK.instance.currentAccessToken;
     if (result != null) {
+      final User? user = FirebaseAuth.instance.currentUser;
+      final StoreData? getStoreData =
+          user != null ? await fetchStoreDetails(user.uid) : null;
       final userData = await readUserData();
       if (userData != null) {
-        return userData;
+        return UserData(
+            img: userData.img,
+            id: userData.id,
+            name: userData.name,
+            birthday: userData.birthday,
+            storeData: getStoreData);
       }
     }
     return null;
@@ -28,9 +39,39 @@ class UserDataNotifier extends _$UserDataNotifier {
     }
     return isSuccess;
   }
+
+  Future<bool> addStoreData(StoreData storeData) async {
+    final setData = UserData(
+        img: state.value!.img,
+        id: state.value!.id,
+        name: state.value!.name,
+        birthday: state.value!.birthday,
+        storeData: storeData);
+    final isSuccess = await writeUserData(setData);
+    if (isSuccess) {
+      state = await AsyncValue.guard(() async {
+        return setData;
+      });
+    }
+    return isSuccess;
+  }
+
+  Future<void> upDataStore() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    final StoreData? getStoreData =
+        user != null ? await fetchStoreDetails(user.uid) : null;
+    if (getStoreData != null) {
+      state = await AsyncValue.guard(() async {
+        return UserData(
+            img: state.value!.img,
+            id: state.value!.id,
+            name: state.value!.name,
+            birthday: state.value!.birthday,
+            storeData: getStoreData);
+      });
+    }
+  }
 }
-
-
 // class AccountData {
 //   bool? isGeneralUser;
 //   StoreData? storeData;

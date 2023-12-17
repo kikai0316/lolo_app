@@ -212,3 +212,36 @@ Widget lineLoginButton({
     ),
   );
 }
+
+Widget miniButtonWithCustomColor({
+  required BuildContext context,
+  required String text,
+  required void Function()? onTap,
+  required Color color,
+  required Color textColor,
+}) {
+  final safeAreaHeight = safeHeight(context);
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  return Material(
+    color: color,
+    borderRadius: BorderRadius.circular(10),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        alignment: Alignment.center,
+        height: safeAreaHeight * 0.05,
+        width: safeAreaWidth * 0.4,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: nText(
+          text,
+          color: textColor,
+          fontSize: safeAreaWidth / 30,
+          bold: 700,
+        ),
+      ),
+    ),
+  );
+}

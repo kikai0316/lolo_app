@@ -47,7 +47,6 @@ class SearchPage extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.black,
-          floatingActionButton: FloatingActionButton(onPressed: () async {}),
           appBar: appBar(context, "探す"),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

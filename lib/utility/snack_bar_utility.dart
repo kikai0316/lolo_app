@@ -59,9 +59,7 @@ void errorSnackbar(BuildContext context, {required String message}) {
   ).show(context);
 }
 
-void loginSuccessSnackbar(
-  BuildContext context,
-) {
+void loginSuccessSnackbar(BuildContext context, String message) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
   HapticFeedback.vibrate();
@@ -97,7 +95,7 @@ void loginSuccessSnackbar(
             ),
             Expanded(
               child: Text(
-                "ようこそ！ログインに成功しました。",
+                message,
                 style: TextStyle(
                   fontFamily: "Normal",
                   fontVariations: const [FontVariation("wght", 700)],
