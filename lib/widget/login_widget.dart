@@ -188,8 +188,8 @@ class LoginTextField extends HookConsumerWidget {
   }
 }
 
-class StoreSettelingTextField extends HookConsumerWidget {
-  const StoreSettelingTextField({
+class StoreSetteingTextField extends HookConsumerWidget {
+  const StoreSetteingTextField({
     super.key,
     required this.subText,
     required this.controller,
@@ -236,7 +236,7 @@ class StoreSettelingTextField extends HookConsumerWidget {
                   fontVariations: const [FontVariation("wght", 400)],
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: safeAreaWidth / 28,
+                  fontSize: safeAreaWidth / 27,
                 ),
                 decoration: InputDecoration(
                   enabledBorder: InputBorder.none,

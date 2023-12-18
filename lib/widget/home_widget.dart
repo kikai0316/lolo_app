@@ -15,7 +15,7 @@ import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/firebase_storage_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/img_page/on_upload.dart';
+import 'package:lolo_app/view/store/on_store_upload.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -54,12 +54,13 @@ Widget otherWidget(BuildContext context,
 Widget storeWidget(
   BuildContext context, {
   required void Function()? onTap,
+  required StoreData storeData,
 }) {
   final safeAreaWidth = MediaQuery.of(context).size.width;
   return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        height: safeAreaWidth * 0.22,
+        height: safeAreaWidth * 0.21,
         width: safeAreaWidth * 0.19,
         child: Stack(
           alignment: Alignment.topCenter,
@@ -119,12 +120,15 @@ Widget storeWidget(
             Align(
               alignment: Alignment.bottomCenter,
               child: GestureDetector(
-                onTap: () =>
-                    screenTransitionToTop(context, const OnUpLoadPage()),
+                onTap: () => screenTransitionToTop(
+                    context,
+                    OnUpLoadPage(
+                      storeData: storeData,
+                    )),
                 child: Container(
                   alignment: Alignment.center,
-                  height: safeAreaWidth * 0.08,
-                  width: safeAreaWidth * 0.08,
+                  height: safeAreaWidth * 0.09,
+                  width: safeAreaWidth * 0.09,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [

@@ -289,12 +289,15 @@ class HomePage extends HookConsumerWidget {
                         ),
                       }
                     },
-                    Padding(
-                      padding: EdgeInsets.only(
-                          right: safeAreaWidth * 0.03,
-                          top: safeAreaHeight * 0.015),
-                      child: storeWidget(context, onTap: () {}),
-                    )
+                    if (userData.storeData != null) ...{
+                      Padding(
+                        padding: EdgeInsets.only(
+                            right: safeAreaWidth * 0.03,
+                            top: safeAreaHeight * 0.015),
+                        child: storeWidget(context,
+                            onTap: () {}, storeData: userData.storeData!),
+                      )
+                    }
                   ],
                 ),
               ),

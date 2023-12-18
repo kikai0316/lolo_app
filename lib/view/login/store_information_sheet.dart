@@ -12,10 +12,9 @@ import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
-import 'package:lolo_app/utility/screen_transition_utility.dart';
+import 'package:lolo_app/utility/crop_img_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/img_page/logo_confirmation_page.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 import 'package:lolo_app/widget/login_widget.dart';
 import 'package:http/http.dart' as http;
@@ -155,21 +154,12 @@ class StoreSettelingSheetWidget extends HookConsumerWidget {
                                   onTap: () async {
                                     isLoading.value = true;
                                     await getMobileImage(
-                                        onSuccess: (value) {
-                                          if (context.mounted) {
-                                            // logo.value = value;
-                                            screenTransitionNormal(
-                                                context,
-                                                LogoConfirmation(
-                                                    img: value,
-                                                    onTap: (value) {
-                                                      isErrorList.value[0] =
-                                                          false;
-                                                      isErrorList.value = [
-                                                        ...isErrorList.value
-                                                      ];
-                                                      logo.value = value;
-                                                    }));
+                                        onSuccess: (value) async {
+                                          final cropLogo =
+                                              await cropLogoImg(value);
+                                          if (context.mounted &&
+                                              cropLogo != null) {
+                                            logo.value = cropLogo;
                                           }
                                         },
                                         onError: () => errorSnackbar(context,
@@ -181,7 +171,7 @@ class StoreSettelingSheetWidget extends HookConsumerWidget {
                           Padding(
                             padding:
                                 EdgeInsets.only(top: safeAreaHeight * 0.03),
-                            child: StoreSettelingTextField(
+                            child: StoreSetteingTextField(
                               title: "店舗名：",
                               isError: isErrorList.value[1],
                               onChanged: (value) {
@@ -203,7 +193,7 @@ class StoreSettelingSheetWidget extends HookConsumerWidget {
                           Padding(
                             padding:
                                 EdgeInsets.only(top: safeAreaHeight * 0.03),
-                            child: StoreSettelingTextField(
+                            child: StoreSetteingTextField(
                               title: "住所：",
                               controller: controllerList[2],
                               subText: "住所を入力...",
@@ -246,7 +236,7 @@ class StoreSettelingSheetWidget extends HookConsumerWidget {
                                   bold: 700),
                             ),
                           ),
-                          StoreSettelingTextField(
+                          StoreSetteingTextField(
                             title: "",
                             controller: controllerList[3],
                             subText: "検索キーワードを入力...",

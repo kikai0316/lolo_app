@@ -9,11 +9,10 @@ import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/utility/screen_transition_utility.dart';
+import 'package:lolo_app/utility/crop_img_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account/on_edit_text_sheet.dart';
-import 'package:lolo_app/view/img_page/logo_confirmation_page.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/account_widget.dart';
 
@@ -60,15 +59,10 @@ class ProfileSetting extends HookConsumerWidget {
 
     Future<void> getImg() async {
       isLoading.value = true;
-      await getMobileImage(onSuccess: (value) {
-        if (context.mounted) {
-          screenTransitionNormal(
-              context,
-              LogoConfirmation(
-                  img: value,
-                  onTap: (value) {
-                    editLogo.value = value;
-                  }));
+      await getMobileImage(onSuccess: (value) async {
+        final cropLogo = await cropLogoImg(value);
+        if (context.mounted && cropLogo != null) {
+          editLogo.value = cropLogo;
         }
       }, onError: () {
         errorSnackbar(

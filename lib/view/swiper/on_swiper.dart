@@ -25,6 +25,7 @@ class OnSwiper extends HookConsumerWidget {
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final safeAreaHeight = safeHeight(context);
     final imgIndex = useState<int>(0);
+
     return SafeArea(
       child: SingleChildScrollView(
         controller: controller,

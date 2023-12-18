@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/view/home.dart';
@@ -255,4 +256,28 @@ List<int> imgRandomIndex(int length) {
   }
   setList.addAll(meinList);
   return setList;
+}
+
+Future<DateTime?> showCalendar(BuildContext context) async {
+  final dataTime = await showDatePicker(
+      context: context,
+      locale: const Locale('ja', 'JP'),
+      helpText: "日付を選択してください",
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+                onPrimary: blackColor,
+                onSurface: blueColor,
+                primary: blueColor),
+            dialogBackgroundColor: blackColor,
+          ),
+          child: child!,
+        );
+      });
+  return dataTime;
 }

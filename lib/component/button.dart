@@ -32,38 +32,6 @@ Widget bottomButton({
   );
 }
 
-Widget borderButton({
-  required BuildContext context,
-  required String text,
-  required void Function()? onTap,
-}) {
-  final safeAreaHeight = safeHeight(context);
-  final safeAreaWidth = MediaQuery.of(context).size.width;
-  return Material(
-    color: Colors.transparent,
-    borderRadius: BorderRadius.circular(15),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        alignment: Alignment.center,
-        height: safeAreaHeight * 0.065,
-        width: safeAreaWidth * 0.95,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: nText(
-          text,
-          color: Colors.white,
-          fontSize: safeAreaWidth / 27,
-          bold: 700,
-        ),
-      ),
-    ),
-  );
-}
-
 Widget shadowButton(
   BuildContext context, {
   required String text,
@@ -97,37 +65,6 @@ Widget shadowButton(
         color: Colors.white,
         fontSize: safeAreaWidth / 27,
         bold: 700,
-      ),
-    ),
-  );
-}
-
-Widget radiusButton({
-  required BuildContext context,
-  required String text,
-  required void Function()? onTap,
-}) {
-  final safeAreaHeight = safeHeight(context);
-  final safeAreaWidth = MediaQuery.of(context).size.width;
-  return Material(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(50),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(50),
-      child: Container(
-        alignment: Alignment.center,
-        height: safeAreaHeight * 0.065,
-        width: safeAreaWidth * 0.8,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-        ),
-        child: nText(
-          text,
-          color: blueColor2,
-          fontSize: safeAreaWidth / 23,
-          bold: 700,
-        ),
       ),
     ),
   );
