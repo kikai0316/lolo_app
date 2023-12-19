@@ -18,20 +18,22 @@ Future<Uint8List?> cropLogoImg(Uint8List img) async {
     ],
     uiSettings: [
       AndroidUiSettings(
-        toolbarTitle: 'Cropper',
+        toolbarTitle: 'ロゴ画像画像',
         toolbarColor: Colors.deepOrange,
         toolbarWidgetColor: Colors.white,
         initAspectRatio: CropAspectRatioPreset.square,
         lockAspectRatio: true,
       ),
       IOSUiSettings(
-        title: 'Cropper',
-        rectX: 50,
-        rectY: 50,
-        rectWidth: 5000,
-        rectHeight: 5000,
-        aspectRatioLockEnabled: true,
-      )
+          title: 'ロゴ画像画像',
+          rectX: 50,
+          rectY: 50,
+          rectWidth: 5000,
+          rectHeight: 5000,
+          aspectRatioLockEnabled: true,
+          aspectRatioPickerButtonHidden: true,
+          doneButtonTitle: "完了",
+          cancelButtonTitle: "キャンセル")
     ],
   );
 
@@ -57,7 +59,7 @@ Future<Uint8List?> cropEventImg(Uint8List img) async {
     ],
     uiSettings: [
       AndroidUiSettings(
-        toolbarTitle: 'ロゴ画像画像',
+        toolbarTitle: 'イベント画像',
         toolbarColor: Colors.deepOrange,
         toolbarWidgetColor: Colors.white,
         initAspectRatio: CropAspectRatioPreset.square,

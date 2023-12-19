@@ -84,6 +84,7 @@ class AllStoresNotifier extends _$AllStoresNotifier {
             newStoreList.add(StoreData(
               postImgList: [],
               logo: null,
+              eventList: [],
               id: change.id,
               searchWord: searchWordList,
               name: nullCheckString(data["name"]) ?? "未設定",

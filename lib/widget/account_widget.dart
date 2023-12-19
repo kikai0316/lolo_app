@@ -12,7 +12,7 @@ import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account/profile_setting.dart';
-import 'package:lolo_app/view/account/store_setting.dart';
+import 'package:lolo_app/view/account/store_information.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 
 final settingTitle = [
@@ -145,18 +145,15 @@ class AccountStoreDataWidget extends HookConsumerWidget {
                             final notifier =
                                 ref.read(userDataNotifierProvider.notifier);
                             isLoading.value = true;
-                            await notifier.upDataStore();
+                            await notifier.reFetchStore();
                             if (context.mounted) {
                               isLoading.value = false;
                             }
                           }
                           if (i == 1) {
                             if (context.mounted) {
-                              screenTransitionToTop(
-                                  context,
-                                  StoreSetting(
-                                    storeData: data,
-                                  ));
+                              screenTransitionNormal(
+                                  context, const StoreInformation());
                             }
                           }
                         },

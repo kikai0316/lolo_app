@@ -15,14 +15,30 @@ class StoreData with _$StoreData {
       required String address,
       required String businessHours,
       required List<String> searchWord,
+      required List<EventType> eventList,
       required LatLng location}) = _StoreData;
 }
 
 class StoryImgType {
   Uint8List img;
+  String id;
   DateTime date;
   StoryImgType({
     required this.img,
+    required this.id,
     required this.date,
+  });
+}
+
+class EventType {
+  Uint8List img;
+  String id;
+  String title;
+  DateTime date;
+  EventType({
+    required this.img,
+    required this.id,
+    required this.date,
+    required this.title,
   });
 }

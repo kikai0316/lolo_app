@@ -40,23 +40,18 @@ class UserDataNotifier extends _$UserDataNotifier {
     return isSuccess;
   }
 
-  Future<bool> addStoreData(StoreData storeData) async {
-    final setData = UserData(
-        img: state.value!.img,
-        id: state.value!.id,
-        name: state.value!.name,
-        birthday: state.value!.birthday,
-        storeData: storeData);
-    final isSuccess = await writeUserData(setData);
-    if (isSuccess) {
-      state = await AsyncValue.guard(() async {
-        return setData;
-      });
-    }
-    return isSuccess;
+  Future<void> addStoreData(StoreData? storeData) async {
+    state = await AsyncValue.guard(() async {
+      return UserData(
+          img: state.value!.img,
+          id: state.value!.id,
+          name: state.value!.name,
+          birthday: state.value!.birthday,
+          storeData: storeData);
+    });
   }
 
-  Future<void> upDataStore() async {
+  Future<void> reFetchStore() async {
     final User? user = FirebaseAuth.instance.currentUser;
     final StoreData? getStoreData =
         user != null ? await fetchStoreDetails(user.uid) : null;

@@ -136,7 +136,7 @@ class StoreSettelingSheetWidget extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.black,
-          appBar: appBar(context, "基本情報"),
+          appBar: appBar(context, "基本情報", false),
           body: SafeArea(
             child: Padding(
               padding: xPadding(context),

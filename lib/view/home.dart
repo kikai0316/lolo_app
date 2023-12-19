@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/img.dart';
-import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/location_utility.dart';
@@ -15,6 +14,7 @@ import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account.dart';
 import 'package:lolo_app/view/search.dart';
+import 'package:lolo_app/view/store_post.dart';
 import 'package:lolo_app/view/swiper.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/view_model/marker_list.dart';
@@ -226,11 +226,11 @@ class HomePage extends HookConsumerWidget {
                               top: safeAreaHeight * 0.015),
                           child: otherWidget(context, onTap: () async {
                             if (i == 0) {
-                              screenTransitionToTop(
+                              screenTransitionNormal(
                                   context, const AccountPage());
                             }
                             if (i == 1) {
-                              screenTransitionToTop(
+                              screenTransitionNormal(
                                   context,
                                   SearchPage(
                                     locationData: LatLng(locationData.latitude,
@@ -289,15 +289,6 @@ class HomePage extends HookConsumerWidget {
                         ),
                       }
                     },
-                    if (userData.storeData != null) ...{
-                      Padding(
-                        padding: EdgeInsets.only(
-                            right: safeAreaWidth * 0.03,
-                            top: safeAreaHeight * 0.015),
-                        child: storeWidget(context,
-                            onTap: () {}, storeData: userData.storeData!),
-                      )
-                    }
                   ],
                 ),
               ),
@@ -305,29 +296,24 @@ class HomePage extends HookConsumerWidget {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                      alignment: Alignment.center,
-                      height: safeAreaHeight * 0.12,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 10,
-                            spreadRadius: 1.0,
-                          ),
-                        ],
-                        color: blueColor2,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
+                    alignment: Alignment.center,
+                    height: safeAreaHeight * 0.12,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          spreadRadius: 1.0,
                         ),
+                      ],
+                      color: blueColor2,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
-                      child: allStoresWhen.isEmpty
-                          ? nText("周辺10km圏内に店舗は見当たりません",
-                              color: Colors.white,
-                              fontSize: safeAreaWidth / 25,
-                              bold: 700)
-                          : null),
+                    ),
+                  ),
                 ),
                 SafeArea(
                   child: Align(
@@ -351,6 +337,29 @@ class HomePage extends HookConsumerWidget {
                             SizedBox(
                               width: safeAreaWidth * 0.05,
                             ),
+                            if (userData.storeData != null) ...{
+                              OnStore(
+                                isFocus: false,
+                                myDataOnTap: () => screenTransitionToTop(
+                                    context,
+                                    StorePostPage(
+                                      storeData: userData.storeData!,
+                                    )),
+                                storeData: userData.storeData!,
+                                locationonTap: null,
+                                distance: calculateDistanceToString(
+                                    userData.storeData!.location,
+                                    LatLng(locationData.latitude,
+                                        locationData.longitude)),
+                                onTap: () => screenTransitionHero(
+                                  context,
+                                  SwiperPage(
+                                    storeList: [userData.storeData!],
+                                    index: 0,
+                                  ),
+                                ),
+                              ),
+                            },
                             for (int i = 0; i < allStoresWhen.length; i++) ...{
                               if (containsMarkerWithId(
                                   markerListWhen, allStoresWhen[i].id)) ...{
@@ -358,6 +367,7 @@ class HomePage extends HookConsumerWidget {
                                   key: storeKeys.value[allStoresWhen[i].id],
                                   isFocus: cameraPosition.value ==
                                       allStoresWhen[i].id,
+                                  myDataOnTap: () {},
                                   storeData: allStoresWhen[i],
                                   locationonTap: () =>
                                       mapController.value?.animateCamera(

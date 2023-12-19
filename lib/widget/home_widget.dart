@@ -13,9 +13,7 @@ import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/firebase_storage_utility.dart';
-import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/store/on_store_upload.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -49,117 +47,6 @@ Widget otherWidget(BuildContext context,
       child: widget,
     ),
   );
-}
-
-Widget storeWidget(
-  BuildContext context, {
-  required void Function()? onTap,
-  required StoreData storeData,
-}) {
-  final safeAreaWidth = MediaQuery.of(context).size.width;
-  return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        height: safeAreaWidth * 0.21,
-        width: safeAreaWidth * 0.19,
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: safeAreaWidth * 0.19,
-              width: safeAreaWidth * 0.19,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 10,
-                    spreadRadius: 1.0,
-                  ),
-                ],
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  begin: FractionalOffset.topRight,
-                  end: FractionalOffset.bottomLeft,
-                  colors: [
-                    Color.fromARGB(255, 4, 15, 238),
-                    Color.fromARGB(255, 6, 120, 255),
-                    Color.fromARGB(255, 4, 200, 255),
-                  ],
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(safeAreaWidth * 0.006),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: blackColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(safeAreaWidth * 0.002),
-                    child: Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              "https://i.pinimg.com/564x/cc/00/24/cc0024a79bc48352591109167ce41faa.jpg"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                onTap: () => screenTransitionToTop(
-                    context,
-                    OnUpLoadPage(
-                      storeData: storeData,
-                    )),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: safeAreaWidth * 0.09,
-                  width: safeAreaWidth * 0.09,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(1),
-                        blurRadius: 10,
-                        spreadRadius: 1.0,
-                      ),
-                    ],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(safeAreaWidth * 0.02),
-                    child: Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage("assets/img/add_icon.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ));
 }
 
 final PageController pageController = PageController();
@@ -256,18 +143,19 @@ class MainScreenWidget extends HookConsumerWidget {
 }
 
 class OnStore extends HookConsumerWidget {
-  const OnStore({
-    super.key,
-    required this.storeData,
-    required this.distance,
-    required this.onTap,
-    required this.locationonTap,
-    required this.isFocus,
-  });
+  const OnStore(
+      {super.key,
+      required this.storeData,
+      required this.distance,
+      required this.onTap,
+      required this.locationonTap,
+      required this.isFocus,
+      required this.myDataOnTap});
   final StoreData storeData;
   final String distance;
   final void Function() onTap;
   final void Function()? locationonTap;
+  final void Function()? myDataOnTap;
   final bool isFocus;
 
   @override
@@ -385,10 +273,42 @@ class OnStore extends HookConsumerWidget {
                                               padding: safeAreaWidth * 0.008)),
                                     )),
                               },
+                              if (myDataOnTap != null) ...{
+                                Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: GestureDetector(
+                                      onTap: myDataOnTap,
+                                      child: Container(
+                                        height: safeAreaHeight * 0.04,
+                                        width: safeAreaHeight * 0.04,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(
+                                              safeAreaWidth * 0.02),
+                                          child: Container(
+                                            height: double.infinity,
+                                            width: double.infinity,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/img/add_icon.png"),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )),
+                              },
                               Align(
                                   alignment: Alignment.topRight,
                                   child: nTextWithShadow(distance,
                                       color: Colors.white,
+                                      opacity: 1,
                                       fontSize: safeAreaWidth / 35,
                                       bold: 700))
                             ],
@@ -449,7 +369,7 @@ class OnMarker extends HookConsumerWidget {
     final safeAreaWidth = MediaQuery.of(context).size.width;
     useEffect(() {
       Future(() async {
-        final dbGetData = await storeDataGet(storeData);
+        final dbGetData = await storeDataGet(storeData.id);
         if (dbGetData != null && context.mounted) {
           final notifier = ref.read(allStoresNotifierProvider.notifier);
           notifier.dataUpDate(dbGetData);

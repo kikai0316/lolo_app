@@ -4,11 +4,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
+import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/crop_img_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
@@ -17,11 +17,8 @@ import 'package:lolo_app/widget/login_widget.dart';
 
 class OnAddEventPage extends HookConsumerWidget {
   OnAddEventPage({super.key, required this.onAdd});
-  final void Function(StoryEventType) onAdd;
-  final controllerList = List.generate(
-      2,
-      (index) =>
-          TextEditingController(text: index == 0 ? null : initEventDetails));
+  final void Function(EventType) onAdd;
+  final controller = TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
@@ -34,7 +31,7 @@ class OnAddEventPage extends HookConsumerWidget {
         extendBody: true,
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.black,
-        appBar: appBar(context, "イベント追加"),
+        appBar: appBar(context, "イベント追加", false),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -90,7 +87,7 @@ class OnAddEventPage extends HookConsumerWidget {
                                           EdgeInsets.all(safeAreaWidth * 0.03),
                                       child: deleteIconWithCircle(
                                           size: safeAreaWidth * 0.1,
-                                          padding: 0, //後
+                                          padding: 0,
                                           onDelete: () =>
                                               eventImg.value = null),
                                     ),
@@ -156,21 +153,7 @@ class OnAddEventPage extends HookConsumerWidget {
                   subText: "イベント名を入力...",
                   title: "",
                   isError: false,
-                  controller: controllerList[0],
-                  onChanged: (value) {},
-                ),
-              ),
-              Padding(
-                padding: xPadding(context),
-                child: Opacity(
-                    opacity: 0.6, child: titleWithCircle(context, "イベント詳細")),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: safeAreaHeight * 0.02, bottom: safeAreaHeight * 0.04),
-                child: EventDetailsField(
-                  isError: false,
-                  controller: controllerList[1],
+                  controller: controller,
                   onChanged: (value) {},
                 ),
               ),
@@ -188,21 +171,26 @@ class OnAddEventPage extends HookConsumerWidget {
               context: context,
               isWhiteMainColor: true,
               text: "追加",
-              onTap: () {
+              onTap: () async {
+                isLoading.value = true;
                 if (eventImg.value != null &&
                     eventDate.value != null &&
-                    controllerList[0].text.isNotEmpty) {
+                    controller.text.isNotEmpty) {
                   Navigator.pop(context);
-                  onAdd(StoryEventType(
+                  onAdd(EventType(
+                    id: generateRandomString(),
                     img: eventImg.value!,
                     date: eventDate.value!,
-                    title: controllerList[0].text,
-                    detail: controllerList[1].text,
+                    title: controller.text,
                   ));
                 } else {
                   errorSnackbar(context,
                       message:
-                          "${eventImg.value == null ? "画像、" : ""}${eventDate.value == null ? "開催日時、" : ""}${controllerList[0].text.isEmpty ? "イベント名、" : ""}を入力してください。");
+                          "${eventImg.value == null ? "画像、" : ""}${eventDate.value == null ? "開催日時、" : ""}${controller.text.isEmpty ? "イベント名、" : ""}を入力してください。");
+                  await Future<void>.delayed(const Duration(milliseconds: 500));
+                  if (context.mounted) {
+                    isLoading.value = false;
+                  }
                 }
               }),
         ),
@@ -233,13 +221,6 @@ class OnAddEventPage extends HookConsumerWidget {
         ),
       ),
     );
-  }
-
-  String toEvelntDateString(
-    DateTime date,
-  ) {
-    final DateFormat formatter = DateFormat('y年M月d日（ E ）', 'ja_JP');
-    return formatter.format(date);
   }
 }
 
@@ -297,17 +278,4 @@ class EventDetailsField extends HookConsumerWidget {
       ),
     );
   }
-}
-
-class StoryEventType {
-  Uint8List img;
-  String title;
-  String detail;
-  DateTime date;
-  StoryEventType({
-    required this.img,
-    required this.date,
-    required this.detail,
-    required this.title,
-  });
 }

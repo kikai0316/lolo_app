@@ -51,30 +51,33 @@ Widget imgWidget(
   );
 }
 
-PreferredSizeWidget? appBar(BuildContext context, String? title) {
+PreferredSizeWidget? appBar(
+    BuildContext context, String? title, bool isLeftIcon) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
   return AppBar(
     backgroundColor: Colors.transparent,
     elevation: 0,
-    automaticallyImplyLeading: false,
-    actions: [
-      Padding(
-        padding: EdgeInsets.only(right: safeAreaWidth * 0.04),
-        child: IconButton(
-          alignment: Alignment.center,
-          splashRadius: safeAreaHeight * 0.03,
-          onPressed: () => Navigator.pop(context),
-          icon: Align(
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.close,
-              size: safeAreaWidth / 13,
-            ),
-          ),
-        ),
-      )
-    ],
+    automaticallyImplyLeading: isLeftIcon,
+    actions: isLeftIcon
+        ? null
+        : [
+            Padding(
+              padding: EdgeInsets.only(right: safeAreaWidth * 0.04),
+              child: IconButton(
+                alignment: Alignment.center,
+                splashRadius: safeAreaHeight * 0.03,
+                onPressed: () => Navigator.pop(context),
+                icon: Align(
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.close,
+                    size: safeAreaWidth / 13,
+                  ),
+                ),
+              ),
+            )
+          ],
     title: title == null
         ? null
         : nText(
@@ -100,7 +103,7 @@ Widget deleteIconWithCircle({
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.7),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 10,
             spreadRadius: 1.0,
           )

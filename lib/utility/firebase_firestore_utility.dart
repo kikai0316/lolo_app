@@ -37,31 +37,22 @@ Future<StoreData?> fetchStoreDetails(String id) async {
 
 Future<StoreData?> toStoreData(Map<String, dynamic> dbData, String id) async {
   try {
-    var dbGetData = await storeDataGet(StoreData(
-      postImgList: [],
-      logo: null,
-      id: id,
-      name: "",
-      address: "",
-      businessHours: "",
-      searchWord: [],
-      location: const LatLng(0, 0),
-    ));
+    var dbGetData = await storeDataGet(id);
     if (dbGetData?.logo == null) return null;
     var getGeo = dbData['geo']["geopoint"] as GeoPoint?;
     if (getGeo == null) return null;
     List<String> searchWordList =
         List<String>.from(dbData['search_word'] ?? []);
     return StoreData(
-      postImgList: dbGetData!.postImgList,
-      logo: dbGetData.logo,
-      id: id,
-      name: dbData["name"] ?? "",
-      searchWord: searchWordList,
-      address: dbData["address"] ?? "",
-      businessHours: dbData["businessHours"] ?? "",
-      location: LatLng(getGeo.latitude, getGeo.longitude),
-    );
+        postImgList: dbGetData!.postImgList,
+        logo: dbGetData.logo,
+        id: id,
+        name: dbData["name"] ?? "",
+        searchWord: searchWordList,
+        address: dbData["address"] ?? "",
+        businessHours: dbData["business_hours"] ?? "",
+        location: LatLng(getGeo.latitude, getGeo.longitude),
+        eventList: dbGetData.eventList);
   } catch (e) {
     return null;
   }

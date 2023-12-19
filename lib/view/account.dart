@@ -19,9 +19,15 @@ class AccountPage extends HookConsumerWidget {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final notifierUserData = ref.watch(userDataNotifierProvider);
+    final int settingTitleLength = notifierUserData.when(
+        data: (value) => value?.storeData != null
+            ? settingTitle.length - 1
+            : settingTitle.length,
+        error: (e, s) => settingTitle.length,
+        loading: () => settingTitle.length);
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: appBar(context, "アカウント設定"),
+      appBar: appBar(context, "アカウント設定", true),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -57,7 +63,7 @@ class AccountPage extends HookConsumerWidget {
                 ),
                 child: Column(
                   children: [
-                    for (int i = 0; i < settingTitle.length; i++) ...{
+                    for (int i = 0; i < settingTitleLength; i++) ...{
                       settingWidget(
                         onTap: () {
                           if (i == 0) {
@@ -68,18 +74,14 @@ class AccountPage extends HookConsumerWidget {
                               buttonText: null,
                               ontap: null,
                             );
-                          }
-                          if (i == 1) {
+                          } else if (i == 1) {
                             openURL(url: termsURL, onError: null);
-                          }
-                          if (i == 2) {
+                          } else if (i == 2) {
                             openURL(url: privacyURL, onError: null);
-                          }
-                          if (i == 3) {
+                          } else if (i == 3 && settingTitleLength == 5) {
                             screenTransitionToTop(
                                 context, const StartPage(isGeneral: false));
-                          }
-                          if (i == 4) {
+                          } else {
                             showAlertDialog(
                               context,
                               title: "アカウント削除",
@@ -92,10 +94,12 @@ class AccountPage extends HookConsumerWidget {
                           }
                         },
                         context: context,
-                        isRedTitle: i == settingTitle.length - 1,
-                        iconText: settingTitle[i],
+                        isRedTitle: i == settingTitleLength - 1,
+                        iconText: settingTitleLength == 4 && i == 3
+                            ? settingTitle[4]
+                            : settingTitle[i],
                         isOnlyTopRadius: i == 0,
-                        isOnlyBottomRadius: i == settingTitle.length - 1,
+                        isOnlyBottomRadius: i == settingTitleLength - 1,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.white.withOpacity(0.8),

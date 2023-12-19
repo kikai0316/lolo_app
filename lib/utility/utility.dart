@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
+import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/view/home.dart';
 import 'package:lolo_app/view/location_request.dart';
@@ -280,4 +282,57 @@ Future<DateTime?> showCalendar(BuildContext context) async {
         );
       });
   return dataTime;
+}
+
+String generateRandomString() {
+  const String chars =
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  Random random = Random();
+
+  return List.generate(15, (_) => chars[random.nextInt(chars.length)]).join();
+}
+
+List<EventType> filteredAndSortedEvents(List<EventType> data) {
+  DateTime now = DateTime.now();
+  DateTime today = DateTime(now.year, now.month, now.day);
+  DateTime yesterday = today.subtract(const Duration(days: 1));
+  List<EventType> filteredAndSortedEvents;
+  if (now.hour >= 10) {
+    filteredAndSortedEvents =
+        data.where((event) => event.date.isAfter(yesterday)).toList();
+  } else {
+    filteredAndSortedEvents = data
+        .where((event) =>
+            event.date.isAfter(yesterday.subtract(const Duration(days: 1))) &&
+            event.date.isBefore(today))
+        .toList();
+  }
+  filteredAndSortedEvents.sort((a, b) => a.date.compareTo(b.date));
+  return filteredAndSortedEvents;
+}
+
+String toEvelntDateString(
+  DateTime date,
+) {
+  final DateFormat formatter = DateFormat('y年M月d日（ E ）', 'ja_JP');
+  return formatter.format(date);
+}
+
+String timeAgo(DateTime dateTime) {
+  Duration difference = DateTime.now().difference(dateTime);
+  int minutes = difference.inMinutes;
+  int hours = difference.inHours;
+  int days = difference.inDays;
+  if (minutes < 1) {
+    return 'たった今';
+  } else if (minutes < 10) {
+    return '$minutes分前';
+  } else if (minutes < 60) {
+    int roundedMinutes = (minutes / 10).round() * 10;
+    return '$roundedMinutes分前';
+  } else if (hours < 24) {
+    return '$hours時間前';
+  } else {
+    return '$days日前';
+  }
 }

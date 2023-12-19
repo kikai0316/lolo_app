@@ -59,7 +59,7 @@ void errorSnackbar(BuildContext context, {required String message}) {
   ).show(context);
 }
 
-void loginSuccessSnackbar(BuildContext context, String message) {
+void successSnackbar(BuildContext context, String message) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
   HapticFeedback.vibrate();

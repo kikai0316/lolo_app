@@ -21,8 +21,8 @@ import 'package:lolo_app/widget/account_widget.dart';
 
 TextEditingController? textController;
 
-class StoreSetting extends HookConsumerWidget {
-  const StoreSetting({
+class OnStoreSetting extends HookConsumerWidget {
+  const OnStoreSetting({
     super.key,
     required this.storeData,
   });
@@ -80,7 +80,7 @@ class StoreSetting extends HookConsumerWidget {
         await upLoadMain(editLogo.value!, storeData.id);
       }
       if (storeData.businessHours != editBusinessHour.value) {
-        setData["business_hour"] = editBusinessHour.value;
+        setData["business_hours"] = editBusinessHour.value;
       }
       if (storeData.searchWord != editSearchWord.value) {
         setData["search_word"] = editSearchWord.value;
@@ -96,13 +96,14 @@ class StoreSetting extends HookConsumerWidget {
               address: editAddress.value,
               businessHours: editBusinessHour.value,
               searchWord: editSearchWord.value,
-              location: editLocation.value);
+              location: editLocation.value,
+              eventList: storeData.eventList);
           final notifier = ref.read(userDataNotifierProvider.notifier);
-          final isDataUPDate = await notifier.addStoreData(setStoreData);
-          if (isDataUPDate && context.mounted) {
+          await notifier.addStoreData(setStoreData);
+          if (context.mounted) {
             isLoading.value = false;
             Navigator.pop(context);
-            loginSuccessSnackbar(
+            successSnackbar(
               context,
               "データ更新が正常に完了しました",
             );
@@ -120,7 +121,7 @@ class StoreSetting extends HookConsumerWidget {
         if (context.mounted) {
           isLoading.value = false;
           Navigator.pop(context);
-          loginSuccessSnackbar(
+          successSnackbar(
             context,
             "データ更新が正常に完了しました",
           );
@@ -137,7 +138,7 @@ class StoreSetting extends HookConsumerWidget {
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: nText(
-              "店舗アカウント情報",
+              "店舗アカウント編集",
               color: Colors.white,
               fontSize: safeAreaWidth / 20,
               bold: 700,
@@ -340,8 +341,7 @@ final storeSettingTitle = [
   "店舗名",
   "住所",
   "座標",
-  "営業開始",
-  "営業終了",
+  "営業時間",
   "検索キーワード",
   "店舗コード",
 ];

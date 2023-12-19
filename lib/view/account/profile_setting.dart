@@ -263,7 +263,7 @@ class ProfileSetting extends HookConsumerWidget {
                             isLoading.value = false;
                             if (isUpData) {
                               Navigator.pop(context);
-                              loginSuccessSnackbar(
+                              successSnackbar(
                                 context,
                                 "データ更新が正常に完了しました",
                               );

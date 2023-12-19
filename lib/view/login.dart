@@ -54,15 +54,11 @@ class StartPage extends HookConsumerWidget {
 
     Future<void> writeStoreData(StoreData storeData) async {
       final notifier = ref.read(userDataNotifierProvider.notifier);
-      final isSuccess = await notifier.addStoreData(storeData);
-      if (!isSuccess || !context.mounted) {
-        showSnackbar(2);
-        return;
-      }
+      await notifier.addStoreData(storeData);
       if (context.mounted) {
         isLoading.value = false;
         Navigator.pop(context);
-        loginSuccessSnackbar(
+        successSnackbar(
           context,
           "ようこそ！ログインに成功しました。",
         );
@@ -99,23 +95,22 @@ class StartPage extends HookConsumerWidget {
                         final setData = {
                           "name": value.name,
                           "address": value.address,
-                          "businessHours": "${value.opnen}@${value.close}",
+                          "business_hours": "${value.opnen}@${value.close}",
                           "geo": geoFirePoint.data,
                           "search_word": value.searchWord,
                         };
                         final isDataUpLoading = await setDataStore(setData, id);
-
                         final isLogoUpLoading = await upLoadMain(value.img, id);
-
                         if (isDataUpLoading && isLogoUpLoading) {
                           await writeStoreData(StoreData(
                               postImgList: [],
-                              logo: null,
+                              logo: value.img,
                               id: id,
                               searchWord: value.searchWord,
                               name: value.name,
                               address: value.address,
                               businessHours: "${value.opnen}@${value.close}",
+                              eventList: [],
                               location: LatLng(location[0], location[1])));
                         } else {
                           isLoading.value = false;
@@ -166,7 +161,7 @@ class StartPage extends HookConsumerWidget {
       final isSuccess = await notifier.upData(setData);
       if (isSuccess) {
         // ignore: use_build_context_synchronously
-        loginSuccessSnackbar(
+        successSnackbar(
           context,
           "ようこそ！ログインに成功しました。",
         );
@@ -183,7 +178,7 @@ class StartPage extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: blackColor,
-          appBar: appBar(context, null),
+          appBar: appBar(context, null, false),
           body: SafeArea(
             child: Padding(
               padding: EdgeInsets.only(
@@ -228,56 +223,31 @@ class StartPage extends HookConsumerWidget {
                         isWhiteMainColor: true,
                         text: "ログイン",
                         onTap: () async {
-                          final User? user = FirebaseAuth.instance.currentUser;
-                          if (user == null) {
-                            bottomSheet(context, page: LoginSheetWidget(
-                                onTap: (email, password) async {
-                              isLoading.value = true;
-                              await FirebaseAuth.instance
-                                  .signInWithEmailAndPassword(
-                                      email: email, password: password);
-                              await Future<void>.delayed(
-                                  const Duration(milliseconds: 3));
-                              final User? user =
-                                  FirebaseAuth.instance.currentUser;
-                              if (user == null || !context.mounted) {
-                                showSnackbar(2);
-                                return;
-                              }
-                              final isWriteAccountData =
-                                  await writeSecureStorage(
-                                email: email,
-                                password: password,
-                              );
-                              if (!isWriteAccountData || !context.mounted) {
-                                showSnackbar(2);
-                                return;
-                              }
-                              await logIn(user.uid);
-                            }), isBackgroundColor: true);
-                          } else {
+                          bottomSheet(context, page:
+                              LoginSheetWidget(onTap: (email, password) async {
+                            isLoading.value = true;
+                            await FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                                    email: email, password: password);
+                            await Future<void>.delayed(
+                                const Duration(milliseconds: 3));
+                            final User? user =
+                                FirebaseAuth.instance.currentUser;
+                            if (user == null || !context.mounted) {
+                              showSnackbar(2);
+                              return;
+                            }
+                            final isWriteAccountData = await writeSecureStorage(
+                              email: email,
+                              password: password,
+                            );
+                            if (!isWriteAccountData || !context.mounted) {
+                              showSnackbar(2);
+                              return;
+                            }
                             await logIn(user.uid);
-                          }
+                          }), isBackgroundColor: true);
                         }),
-                    // Padding(
-                    //   padding: EdgeInsets.only(
-                    //     top: safeAreaHeight * 0.01,
-                    //   ),
-                    //   child: loginLine(
-                    //     context,
-                    //   ),
-                    // ),
-                    // borderButton(
-                    //   context: context,
-                    //   text: "新規登録",
-                    //   onTap: () {},
-                    //   //  bottomSheet(context,
-                    //   //     page: SingInSheetWidget(
-                    //   //       onTap: (email, password, name) =>
-                    //   //           singInUp(email, password, name),
-                    //   //     ),
-                    //   // isBackgroundColor: true
-                    // ),
                   } else ...{
                     lineLoginButton(context: context, onTap: () => lineLogin()),
                   },

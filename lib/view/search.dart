@@ -47,7 +47,7 @@ class SearchPage extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.black,
-          appBar: appBar(context, "探す"),
+          appBar: appBar(context, "探す", true),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -182,6 +182,7 @@ class SearchPage extends HookConsumerWidget {
                                       i++) ...{
                                     OnStore(
                                       isFocus: false,
+                                      myDataOnTap: () {},
                                       storeData: nearStores[i],
                                       locationonTap: null,
                                       distance: calculateDistanceToString(
@@ -206,7 +207,7 @@ class SearchPage extends HookConsumerWidget {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   // for (int i = 0; i < 10; i++) ...{
-                                  eventWidget(context, "Club Camelot")
+                                  searchEventWidget(context, "Club Camelot")
                                   // }
                                 ],
                               )),
