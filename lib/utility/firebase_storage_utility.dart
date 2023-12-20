@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lolo_app/model/store_data.dart';
+import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -136,5 +137,21 @@ Future<bool> upLoadEvent(
     return true;
   } on FirebaseException {
     return false;
+  }
+}
+
+Future<UserData?> userDataGet(String id) async {
+  try {
+    final resultMain =
+        await FirebaseStorage.instance.ref("user/$id/").listAll();
+    final mainImgGet = await resultMain.items.first.getData();
+    if (mainImgGet != null) {
+      return UserData(
+          img: mainImgGet, id: "", name: "", birthday: "", storeData: null);
+    } else {
+      return null;
+    }
+  } on FirebaseException {
+    return null;
   }
 }

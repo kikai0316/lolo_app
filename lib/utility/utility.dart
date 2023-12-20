@@ -296,19 +296,23 @@ List<EventType> filteredAndSortedEvents(List<EventType> data) {
   DateTime now = DateTime.now();
   DateTime today = DateTime(now.year, now.month, now.day);
   DateTime yesterday = today.subtract(const Duration(days: 1));
-  List<EventType> filteredAndSortedEvents;
-  if (now.hour >= 10) {
-    filteredAndSortedEvents =
+
+  List<EventType> filteredEvents;
+  if (now.hour < 10) {
+    // 午前10時より前：昨日から今日以降までのデータを含める
+    filteredEvents =
         data.where((event) => event.date.isAfter(yesterday)).toList();
   } else {
-    filteredAndSortedEvents = data
+    // 午前10時以降：昨日のデータを含めず、今日以降のデータのみをフィルタリング
+    filteredEvents = data
         .where((event) =>
-            event.date.isAfter(yesterday.subtract(const Duration(days: 1))) &&
-            event.date.isBefore(today))
+            event.date.isAtSameMomentAs(today) || event.date.isAfter(today))
         .toList();
   }
-  filteredAndSortedEvents.sort((a, b) => a.date.compareTo(b.date));
-  return filteredAndSortedEvents;
+
+  // 日付が近い順に並び替え
+  filteredEvents.sort((a, b) => a.date.compareTo(b.date));
+  return filteredEvents;
 }
 
 String toEvelntDateString(
@@ -335,4 +339,15 @@ String timeAgo(DateTime dateTime) {
   } else {
     return '$days日前';
   }
+}
+
+double calculateDistance(LatLng loc1, LatLng loc2) {
+  var p = 0.017453292519943295;
+  var a = 0.5 -
+      cos((loc2.latitude - loc1.latitude) * p) / 2 +
+      cos(loc1.latitude * p) *
+          cos(loc2.latitude * p) *
+          (1 - cos((loc2.longitude - loc1.longitude) * p)) /
+          2;
+  return 12742 * asin(sqrt(a));
 }

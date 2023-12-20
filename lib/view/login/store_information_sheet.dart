@@ -19,8 +19,8 @@ import 'package:lolo_app/widget/app_widget.dart';
 import 'package:lolo_app/widget/login_widget.dart';
 import 'package:http/http.dart' as http;
 
-class StoreSettelingSheetWidget extends HookConsumerWidget {
-  StoreSettelingSheetWidget(
+class StoreSetteingSheetWidget extends HookConsumerWidget {
+  StoreSetteingSheetWidget(
       {super.key, required this.onTap, required this.initData});
   final controllerList = List.generate(4, (index) => TextEditingController());
   final void Function(StoreDataInformation) onTap;

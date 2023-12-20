@@ -75,7 +75,7 @@ class StartPage extends HookConsumerWidget {
         if (getDB == null) {
           screenTransitionToTop(
             context,
-            StoreSettelingSheetWidget(
+            StoreSetteingSheetWidget(
               initData: initStoreData.value,
               onTap: (value) async {
                 isLoading.value = true;

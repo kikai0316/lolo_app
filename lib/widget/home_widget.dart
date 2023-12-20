@@ -2,20 +2,20 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:ui' as ui;
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
-import 'package:lolo_app/utility/firebase_storage_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/store/event_fullscreen_sheet.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 Widget otherWidget(BuildContext context,
     {required Widget widget,
@@ -52,93 +52,174 @@ Widget otherWidget(BuildContext context,
 final PageController pageController = PageController();
 
 class MainScreenWidget extends HookConsumerWidget {
-  const MainScreenWidget({
-    super.key,
-  });
-
+  const MainScreenWidget({super.key, required this.myLocation});
+  final Position myLocation;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    final indicatorIndex = useState<int>(0);
-    final isMove = useState<bool>(false);
-    bool isWithinRange(double? value) {
-      if (value != null) {
-        double decimalPart = value - value.toInt();
-        return decimalPart <= 0.2 || decimalPart >= 0.8;
+    final safeAreaHeight = safeHeight(context);
+    final allStores = ref.watch(allStoresNotifierProvider);
+    final List<EventType> allStoresEvent = allStores.when(
+      data: (value) => value != null
+          ? getSortedEvents(
+              value, LatLng(myLocation.latitude, myLocation.longitude))
+          : [],
+      error: (e, s) => [],
+      loading: () => [],
+    );
+
+    final List<StoreData> allStoresList = allStores.when(
+      data: (value) => value ?? [],
+      error: (e, s) => [],
+      loading: () => [],
+    );
+    String toEventDateOfTime(DateTime date) {
+      final DateFormat formatter = DateFormat('M月d日', 'ja_JP');
+      DateTime now = DateTime.now();
+
+      // 今日の日付と比較
+      if (date.year == now.year &&
+          date.month == now.month &&
+          date.day <= now.day) {
+        return '本日開催';
+      } else {
+        return formatter.format(date);
       }
-      return false; // valueがint型の場合、範囲内にはないと見なす
+    }
+
+    String findStoreByEventId(String eventId) {
+      for (var store in allStoresList) {
+        for (var event in store.eventList) {
+          if (event.id == eventId) {
+            return calculateDistanceToString(store.location,
+                LatLng(myLocation.latitude, myLocation.longitude));
+          }
+        }
+      }
+      return "";
     }
 
     return SizedBox(
-      width: safeAreaWidth * 1,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(
-                onPageChanged: (value, _) {
-                  indicatorIndex.value = value;
-                },
-                onScrolled: (position) {
-                  if (isWithinRange(position)) {
-                    isMove.value = false;
-                  } else {
-                    isMove.value = true;
-                  }
-                },
-                aspectRatio: 3.2 / 1,
-                viewportFraction: 1,
-                // autoPlay: true,
-                enableInfiniteScroll: true,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                disableCenter: true),
-            items: [1, 2, 3, 4, 5].map((i) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return Padding(
-                    padding: EdgeInsets.all(
-                      safeAreaWidth * 0.03,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 10,
-                            spreadRadius: 1.0,
-                          )
-                        ],
-                        image: const DecorationImage(
-                            image: NetworkImage(
-                                "https://i.pinimg.com/564x/91/a6/56/91a65632fd748886ba560af7e21d08ef.jpg"),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  );
-                },
-              );
-            }).toList(),
+        height: safeAreaHeight * 0.13,
+        width: safeAreaWidth * 12,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int i = 0; i < allStoresEvent.length; i++) ...{
+                Padding(
+                    key: ValueKey(i),
+                    padding: EdgeInsets.all(safeAreaWidth * 0.02),
+                    child: SizedBox(
+                      width: safeAreaWidth * 0.4,
+                      child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: GestureDetector(
+                            onTap: () => bottomSheet(context,
+                                page: EventFullScreenSheet(
+                                    event: allStoresEvent[i]),
+                                isBackgroundColor: false),
+                            child: Container(
+                                alignment: Alignment.bottomRight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                      image: MemoryImage(allStoresEvent[i].img),
+                                      fit: BoxFit.cover),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(
+                                              safeAreaWidth * 0.01),
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            height: safeAreaHeight * 0.025,
+                                            width: safeAreaWidth * 0.15,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(
+                                                  safeAreaWidth * 0.005),
+                                              child: FittedBox(
+                                                fit: BoxFit.fitWidth,
+                                                child: nText(
+                                                    toEventDateOfTime(
+                                                        allStoresEvent[i].date),
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        safeAreaWidth / 35,
+                                                    bold: 700),
+                                              ),
+                                            ),
+                                          ),
+                                        )),
+                                    Align(
+                                        alignment: const Alignment(-1, 1),
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: safeAreaWidth * 0.01),
+                                          child: nTextWithShadow(
+                                              findStoreByEventId(
+                                                  allStoresEvent[i].id),
+                                              color: Colors.white,
+                                              fontSize: safeAreaWidth / 25,
+                                              opacity: 1,
+                                              bold: 700),
+                                        ))
+                                  ],
+                                )),
+                          )),
+                    ))
+              }
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: safeAreaHeight * 0.025),
-            child: Opacity(
-              opacity: isMove.value ? 0.5 : 1,
-              child: AnimatedSmoothIndicator(
-                  activeIndex: indicatorIndex.value,
-                  count: [1, 2, 3, 4, 5].length,
-                  effect: ScrollingDotsEffect(
-                    dotColor: Colors.grey.withOpacity(0.5),
-                    activeDotColor: Colors.white,
-                    dotHeight: safeAreaWidth * 0.018,
-                    dotWidth: safeAreaWidth * 0.018,
-                  )),
-            ),
-          ),
-        ],
-      ),
-    );
+        ));
+  }
+
+  List<EventType> getSortedEvents(
+      List<StoreData> stores, LatLng currentLocation) {
+    DateTime now = DateTime.now();
+    DateTime start = now.subtract(const Duration(hours: 8));
+    DateTime end = now.add(const Duration(hours: 8));
+
+    var allEvents = stores.expand((store) => store.eventList).toList();
+
+    var filteredEvents = allEvents
+        .where((event) => event.date.isAfter(start) && event.date.isBefore(end))
+        .toList();
+    filteredEvents.sort((a, b) {
+      var distA = calculateDistance(
+          stores.firstWhere((store) => store.eventList.contains(a)).location,
+          currentLocation);
+      var distB = calculateDistance(
+          stores.firstWhere((store) => store.eventList.contains(b)).location,
+          currentLocation);
+      return distA.compareTo(distB);
+    });
+    var remainingEvents =
+        allEvents.where((event) => !filteredEvents.contains(event)).toList();
+    remainingEvents.sort((a, b) {
+      int dateCompare = a.date.compareTo(b.date);
+      if (dateCompare == 0) {
+        var distA = calculateDistance(
+            stores.firstWhere((store) => store.eventList.contains(a)).location,
+            currentLocation);
+        var distB = calculateDistance(
+            stores.firstWhere((store) => store.eventList.contains(b)).location,
+            currentLocation);
+        return distA.compareTo(distB);
+      }
+      return dateCompare;
+    });
+    return filteredEvents + remainingEvents;
   }
 }
 
@@ -183,7 +264,7 @@ class OnStore extends HookConsumerWidget {
           child: Container(
             alignment: Alignment.center,
             height: safeAreaHeight * 0.13,
-            width: safeAreaHeight * 0.11,
+            width: safeAreaHeight * 0.115,
             child: Stack(
               children: [
                 Column(
@@ -241,7 +322,7 @@ class OnStore extends HookConsumerWidget {
                                         color: Colors.black,
                                         shape: BoxShape.circle,
                                         image: storeData.logo == null
-                                            ? null
+                                            ? notImg()
                                             : DecorationImage(
                                                 image: MemoryImage(
                                                     storeData.logo!),
@@ -319,7 +400,7 @@ class OnStore extends HookConsumerWidget {
                     Padding(
                       padding: EdgeInsets.only(top: safeAreaHeight * 0.005),
                       child: nText(
-                        "NightClub",
+                        storeData.name,
                         color: Colors.white.withOpacity(1),
                         fontSize: safeAreaWidth / 37,
                         bold: 700,
@@ -365,19 +446,7 @@ class OnMarker extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repaintBoundaryKey = GlobalKey(debugLabel: storeData.id);
-    final data = useState<StoreData?>(null);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    useEffect(() {
-      Future(() async {
-        final dbGetData = await storeDataGet(storeData.id);
-        if (dbGetData != null && context.mounted) {
-          final notifier = ref.read(allStoresNotifierProvider.notifier);
-          notifier.dataUpDate(dbGetData);
-          data.value = dbGetData;
-        }
-      });
-      return null;
-    }, []);
     return RepaintBoundary(
       key: repaintBoundaryKey,
       child: Container(
@@ -395,10 +464,10 @@ class OnMarker extends HookConsumerWidget {
             width: safeAreaWidth * 0.115,
             decoration: const BoxDecoration(
                 shape: BoxShape.circle, color: Colors.white),
-            child: data.value != null && data.value?.logo != null
+            child: storeData.logo != null
                 ? ClipOval(
                     child: Image.memory(
-                      data.value!.logo!,
+                      storeData.logo!,
                       fit: BoxFit.cover,
                       height: safeAreaWidth * 0.11,
                       width: safeAreaWidth * 0.11,

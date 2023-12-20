@@ -16,6 +16,7 @@ Widget nText(
       decoration: TextDecoration.none,
       fontFamily: "Normal",
       fontVariations: [FontVariation("wght", bold)],
+      height: 1,
       color: color,
       fontSize: fontSize,
     ),

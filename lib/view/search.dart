@@ -147,7 +147,7 @@ class SearchPage extends HookConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // SingleChildScrollView(
+                          //(
                           //     scrollDirection: Axis.horizontal,
                           //     child: Row(
                           //       mainAxisAlignment: MainAxisAlignment.start,
@@ -200,17 +200,6 @@ class SearchPage extends HookConsumerWidget {
                               ),
                             ),
                           },
-                          searchTitleWithCircle(context, "近くのイベント"),
-                          SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  // for (int i = 0; i < 10; i++) ...{
-                                  searchEventWidget(context, "Club Camelot")
-                                  // }
-                                ],
-                              )),
                           searchTitleWithCircle(context, "アーティスト"),
                           SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
