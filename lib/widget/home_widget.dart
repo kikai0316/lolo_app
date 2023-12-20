@@ -26,8 +26,8 @@ Widget otherWidget(BuildContext context,
     onTap: onTap,
     child: Container(
       alignment: Alignment.center,
-      height: safeAreaWidth * 0.19,
-      width: safeAreaWidth * 0.19,
+      height: safeAreaWidth * 0.17,
+      width: safeAreaWidth * 0.17,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -260,7 +260,7 @@ class OnStore extends HookConsumerWidget {
         child: AnimatedPadding(
           curve: Curves.elasticOut,
           duration: const Duration(milliseconds: 500),
-          padding: EdgeInsets.only(bottom: isFocus ? 20 : 0),
+          padding: EdgeInsets.only(bottom: isFocus ? safeAreaHeight * 0.02 : 0),
           child: Container(
             alignment: Alignment.center,
             height: safeAreaHeight * 0.13,
@@ -280,8 +280,8 @@ class OnStore extends HookConsumerWidget {
                         ),
                         child: Container(
                           alignment: Alignment.center,
-                          height: safeAreaHeight * 0.11,
-                          width: safeAreaHeight * 0.11,
+                          height: safeAreaHeight * 0.1,
+                          width: safeAreaHeight * 0.1,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: storeData.postImgList.isEmpty

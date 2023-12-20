@@ -128,7 +128,7 @@ Future<Widget> nextScreenWithLocationCheck(
   }
 
   final currentPosition = await Geolocator.getCurrentPosition();
-  return HomePage(userData: userData, locationData: currentPosition);
+  return HomePage(myId: userData.id, locationData: currentPosition);
 }
 
 void showAlertDialog(
