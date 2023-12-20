@@ -157,10 +157,14 @@ class StartPage extends HookConsumerWidget {
           name: result.userProfile?.displayName ?? "",
           birthday: "",
           storeData: null);
+      if (!context.mounted) {
+        showSnackbar(2);
+        return;
+      }
       final notifier = ref.read(userDataNotifierProvider.notifier);
+      final isdbUpload = await userDataUpLoad(setData);
       final isSuccess = await notifier.upData(setData);
-      if (isSuccess) {
-        // ignore: use_build_context_synchronously
+      if (isSuccess && isdbUpload && context.mounted) {
         successSnackbar(
           context,
           "ようこそ！ログインに成功しました。",
@@ -178,7 +182,12 @@ class StartPage extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: blackColor,
-          appBar: appBar(context, null, false),
+          appBar: isGeneral
+              ? AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                )
+              : appBar(context, null, false),
           body: SafeArea(
             child: Padding(
               padding: EdgeInsets.only(

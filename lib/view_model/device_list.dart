@@ -20,7 +20,7 @@ class DeviseListNotifier extends _$DeviseListNotifier {
   Future<void> initNearbyService(UserData userData) async {
     nearbyService = NearbyService();
     await nearbyService?.init(
-      serviceType: 'bobo',
+      serviceType: 'lolo',
       deviceName: userData.id,
       strategy: Strategy.P2P_CLUSTER,
       callback: (bool isRunning) async {
@@ -49,6 +49,9 @@ class DeviseListNotifier extends _$DeviseListNotifier {
   }
 
   Future<void> callbackNearbyService() async {
+    state = await AsyncValue.guard(() async {
+      return [];
+    });
     stateChangedSubscription = nearbyService?.stateChangedSubscription(
       callback: (devicesList) async {
         state = await AsyncValue.guard(() async {

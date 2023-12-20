@@ -24,9 +24,13 @@ import 'package:lolo_app/view/not_data/not_permission_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 double safeHeight(BuildContext context) {
-  return MediaQuery.of(context).size.height -
-      MediaQuery.of(context).padding.top -
-      MediaQuery.of(context).padding.bottom;
+  if (context.mounted) {
+    return MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+  } else {
+    return 0;
+  }
 }
 
 Future openURL({required String url, required void Function()? onError}) async {

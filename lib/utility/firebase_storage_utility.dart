@@ -1,7 +1,6 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
@@ -153,5 +152,30 @@ Future<UserData?> userDataGet(String id) async {
     }
   } on FirebaseException {
     return null;
+  }
+}
+
+Future<bool> userDataUpLoad(UserData userData) async {
+  try {
+    final resultMain =
+        await FirebaseStorage.instance.ref("user/${userData.id}").listAll();
+    for (final ref in resultMain.items) {
+      ref.delete();
+    }
+    final directory = await getApplicationDocumentsDirectory();
+    final imagePath = '${directory.path}/img.png';
+    File file = File(imagePath);
+    if (userData.img != null) {
+      await file.writeAsBytes(userData.img!);
+    } else {
+      final ByteData data = await rootBundle.load("assets/img/not.png");
+      await file.writeAsBytes(data.buffer.asUint8List());
+    }
+    await FirebaseStorage.instance
+        .ref("user/${userData.id}/${userData.name}")
+        .putFile(file);
+    return true;
+  } on FirebaseException {
+    return false;
   }
 }

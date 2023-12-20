@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/model/store_data.dart';
@@ -30,7 +31,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
-
+    final isLoading = useState<bool>(true);
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final cameraPosition = useState<String?>(userData.id);
     final storeKeys = useState<Map<String, GlobalKey>>({});
@@ -47,6 +48,14 @@ class HomePage extends HookConsumerWidget {
               locationData.latitude, locationData.longitude);
           return [];
         } else {
+          if (value.isNotEmpty) {
+            Future(() async {
+              await Future<void>.delayed(const Duration(seconds: 1));
+              if (context.mounted) {
+                isLoading.value = false;
+              }
+            });
+          }
           for (int i = 0; i < value.length; i++) {
             storeKeys.value[value[i].id] = GlobalKey();
           }
@@ -64,7 +73,6 @@ class HomePage extends HookConsumerWidget {
       error: (e, s) => {},
       loading: () => {},
     );
-
     void scrollToStore(String storeId) {
       final key = storeKeys.value[storeId];
       if (key == null) return;
@@ -381,7 +389,8 @@ class HomePage extends HookConsumerWidget {
                     ),
                   ),
                 ),
-              )
+              ),
+              if (isLoading.value) const WithIconInLoadingPage()
             ],
           )),
     );
