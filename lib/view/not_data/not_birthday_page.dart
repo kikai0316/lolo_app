@@ -48,11 +48,11 @@ class NotBirthdayPage extends HookConsumerWidget {
     Future<void> dataUpLoad() async {
       isLoading.value = true;
       final setData = UserData(
-        img: userData.img,
-        id: userData.id,
-        name: userData.name,
-        birthday: birthday.value ?? "",
-      );
+          img: userData.img,
+          id: userData.id,
+          name: userData.name,
+          birthday: birthday.value ?? "",
+          storeData: userData.storeData);
       final isWite = await writeUserData(setData);
       if (isWite) {
         final nextScreenWhisUserData = nextScreenWhisUserDataCheck(setData);
@@ -60,8 +60,9 @@ class NotBirthdayPage extends HookConsumerWidget {
           // ignore: use_build_context_synchronously
           screenTransitionNormal(context, nextScreenWhisUserData);
         } else {
-          final nextScreenWithLocation =
-              await nextScreenWithLocationCheck(userData, ref);
+          final nextScreenWithLocation = await nextScreenWithLocationCheck(
+            userData,
+          );
           if (context.mounted) {
             screenTransitionNormal(context, nextScreenWithLocation);
           }

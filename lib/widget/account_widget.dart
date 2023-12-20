@@ -1,14 +1,27 @@
-import 'dart:ui';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/constant/color.dart';
+import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
+import 'package:lolo_app/model/store_data.dart';
+import 'package:lolo_app/model/user_data.dart';
+import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/account/profile_setting.dart';
+import 'package:lolo_app/view/account/store_information.dart';
+import 'package:lolo_app/view_model/user_data.dart';
 
-final settingTitle = ["バージョン", "利用規約", "プライバシーポリシー", "アカウント削除"];
+final settingTitle = [
+  "バージョン",
+  "利用規約",
+  "プライバシーポリシー",
+  "店舗アカウントへログイン",
+  "ユーザーアカウント削除",
+];
 
 Widget settingWidget({
   required BuildContext context,
@@ -61,277 +74,284 @@ Widget settingWidget({
   );
 }
 
-class UserEditSheet extends HookConsumerWidget {
-  const UserEditSheet({
+class AccountStoreDataWidget extends HookConsumerWidget {
+  const AccountStoreDataWidget({
     super.key,
-    required this.isUserName,
-    required this.initData,
-    required this.controller,
-    required this.onTap,
+    required this.data,
   });
-
-  final bool isUserName;
-  final String initData;
-  final TextEditingController controller;
-  final void Function()? onTap;
+  final StoreData data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    final errorText = useState<String?>(null);
-    bool isValidator() {
-      if (isUserName) {
-        if (controller.text.isEmpty) {
-          errorText.value = "ユーザー名を入力してください";
-          return false;
-        }
-        if (controller.text.contains('@')) {
-          errorText.value = "ユーザー名に「@」を含めないでください。";
-          return false;
-        }
-      } else {
-        if (!RegExp(r'^[a-z0-9_.]+$').hasMatch(controller.text)) {
-          errorText.value = "正確になInstagramのユーザーIDを入力してください。";
-          return false;
-        }
-      }
-      return true;
-    }
+    final storeData = useState<StoreData>(data);
+    final isLoading = useState<bool>(false);
 
     return Container(
-      height: MediaQuery.of(context).size.height / 1.5,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15),
-          topRight: Radius.circular(15),
-        ),
+      alignment: Alignment.center,
+      height: safeAreaHeight * 0.08,
+      width: safeAreaWidth * 0.9,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 0, 144, 250),
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              Container(
-                alignment: Alignment.center,
-                height: safeAreaHeight * 0.07,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black.withOpacity(0.2),
-                      width: 0.5,
+      child: !isLoading.value
+          ? Padding(
+              padding: EdgeInsets.only(
+                  right: safeAreaWidth * 0.03, left: safeAreaWidth * 0.03),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: safeAreaWidth * 0.03,
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: safeAreaWidth * 0.10,
+                      height: safeAreaWidth * 0.10,
+                      decoration: BoxDecoration(
+                        image: storeData.value.logo != null
+                            ? DecorationImage(
+                                image: MemoryImage(data.logo!),
+                                fit: BoxFit.cover)
+                            : notImg(),
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Align(
+                  Expanded(
+                      child: Container(
+                    height: safeAreaWidth * 0.11,
+                    alignment: Alignment.centerLeft,
+                    child: FittedBox(
+                      fit: BoxFit.fitWidth,
                       child: nText(
-                        isUserName ? "ユーザー名" : "Instagramアカウント",
-                        color: Colors.black,
-                        fontSize: safeAreaWidth / 25,
+                        storeData.value.name,
+                        color: Colors.white,
+                        fontSize: safeAreaWidth / 23,
                         bold: 700,
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: EdgeInsets.all(safeAreaHeight * 0.015),
-                        child: GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: const Icon(Icons.close),
+                  )),
+                  for (int i = 0; i < 2; i++) ...{
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: safeAreaWidth * 0.02,
+                      ),
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (i == 0) {
+                            final notifier =
+                                ref.read(userDataNotifierProvider.notifier);
+                            isLoading.value = true;
+                            await notifier.reFetchStore();
+                            if (context.mounted) {
+                              isLoading.value = false;
+                            }
+                          }
+                          if (i == 1) {
+                            if (context.mounted) {
+                              screenTransitionNormal(
+                                  context, const StoreInformation());
+                            }
+                          }
+                        },
+                        child: Icon(
+                          i == 0 ? Icons.autorenew : Icons.settings,
+                          color: Colors.white.withOpacity(0.9),
+                          size: safeAreaWidth / 14,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  }
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.only(top: safeAreaHeight * 0.03),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxHeight: safeAreaHeight * 0.25,
-                  ),
-                  width: safeAreaWidth * 0.9,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 230, 230, 230)
-                        .withOpacity(0.5),
-                    border: errorText.value == null
-                        ? null
-                        : Border.all(color: Colors.red),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: safeAreaWidth * 0.04,
-                      right: safeAreaWidth * 0.04,
-                    ),
-                    child: TextFormField(
-                      controller: controller,
-                      autofocus: true,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: "Normal",
-                        fontVariations: const [FontVariation("wght", 400)],
-                        fontWeight: FontWeight.bold,
-                        fontSize: safeAreaWidth / 30,
-                      ),
-                      onChanged: (value) {
-                        if (errorText.value != null) {
-                          errorText.value = null;
-                        }
-                      },
-                      decoration: InputDecoration(
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: isUserName
-                            ? "ユーザーネームを入力..."
-                            : "InstagramのユーザーIDを入力...",
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.3),
-                          fontSize: safeAreaWidth / 30,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              if (errorText.value != null) ...{
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: safeAreaHeight * 0.005,
-                    left: safeAreaWidth * 0.07,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: nText(
-                      errorText.value!,
-                      color: Colors.red,
-                      fontSize: safeAreaWidth / 35,
-                      bold: 400,
-                    ),
-                  ),
-                ),
-              },
-              if (!isUserName) ...{
-                Padding(
-                  padding: EdgeInsets.only(right: safeAreaWidth * 0.04),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (controller.text.isNotEmpty) {
-                        openURL(
-                          url: "https://instagram.com/${controller.text}",
-                          onError: () =>
-                              errorText.value = "エラーが発生しました。再試行してください",
-                        );
-                      } else {
-                        errorText.value = "ユーザーIDを入力してください。";
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        nText(
-                          "アカウント確認する",
-                          color: blueColor,
-                          fontSize: safeAreaWidth / 35,
-                          bold: 700,
-                        ),
-                        const Icon(
-                          Icons.navigate_next,
-                          color: blueColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              },
-              Padding(
-                padding: EdgeInsets.only(top: safeAreaHeight * 0.03),
-                child: bottomButton(
-                  context: context,
-                  isWhiteMainColor: false,
-                  text: "保存",
-                  onTap: () {
-                    if (initData == controller.text) {
-                      Navigator.pop(context);
-                    } else {
-                      if (isValidator()) {
-                        onTap!();
-                      }
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            )
+          : CupertinoActivityIndicator(
+              color: Colors.white,
+              radius: safeAreaHeight * 0.015,
+            ),
     );
   }
 }
 
-Widget accountMainWidget(
+Widget profileWidget(
   BuildContext context, {
-  required int data,
-  required bool isEncounter,
+  required AsyncValue<UserData?> data,
 }) {
   final safeAreaWidth = MediaQuery.of(context).size.width;
   final safeAreaHeight = safeHeight(context);
+  return data.when(
+    data: (value) {
+      if (value != null) {
+        return Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              height: safeAreaHeight * 0.25,
+              width: safeAreaWidth * 0.9,
+              decoration: BoxDecoration(
+                color: blackColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      height: safeAreaWidth * 0.18,
+                      width: safeAreaWidth * 0.18,
+                      decoration: BoxDecoration(
+                        image: value.img != null
+                            ? DecorationImage(
+                                image: MemoryImage(value.img!),
+                                fit: BoxFit.cover)
+                            : notImg(),
+                        shape: BoxShape.circle,
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: safeAreaHeight * 0.01,
+                      bottom: safeAreaHeight * 0.015,
+                    ),
+                    child: nText(
+                      value.name,
+                      color: Colors.white,
+                      fontSize: safeAreaWidth / 20,
+                      bold: 700,
+                    ),
+                  ),
+                  miniButton(
+                    context: context,
+                    text: "プロフィールを編集",
+                    onTap: () => screenTransitionNormal(
+                      context,
+                      ProfileSetting(
+                        userData: value,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (value.storeData != null) ...{
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: safeAreaWidth * 0.1,
+                    top: safeAreaHeight * 0.02,
+                    bottom: safeAreaHeight * 0.01,
+                  ),
+                  child: nText(
+                    "店舗アカウント",
+                    color: Colors.white,
+                    bold: 700,
+                    fontSize: safeAreaWidth / 25,
+                  ),
+                ),
+              ),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AccountStoreDataWidget(data: value.storeData!)),
+            },
+          ],
+        );
+      } else {
+        return accountErrorWidget(context);
+      }
+    },
+    error: (e, s) => accountErrorWidget(context),
+    loading: () => Container(
+      alignment: Alignment.center,
+      height: safeAreaHeight * 0.25,
+      width: safeAreaWidth * 0.9,
+      decoration: BoxDecoration(
+        color: blackColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: CupertinoActivityIndicator(
+        color: Colors.white,
+        radius: safeAreaHeight * 0.018,
+      ),
+    ),
+  );
+}
+
+Widget accountErrorWidget(
+  BuildContext context,
+) {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  final safeAreaHeight = safeHeight(context);
   return Container(
+    alignment: Alignment.center,
+    height: safeAreaHeight * 0.25,
     width: safeAreaWidth * 0.9,
     decoration: BoxDecoration(
-      color: isEncounter
-          ? const Color.fromARGB(255, 85, 192, 97)
-          : const Color.fromARGB(255, 0, 144, 250),
+      color: blackColor,
       borderRadius: BorderRadius.circular(20),
     ),
-    child: Padding(
-      padding: EdgeInsets.only(
-        left: safeAreaWidth * 0.03,
-        right: safeAreaWidth * 0.03,
-        top: safeAreaHeight * 0.01,
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                alignment: Alignment.center,
-                width: safeAreaWidth * 0.1,
-                height: safeAreaWidth * 0.1,
-                decoration: BoxDecoration(
-                  color: isEncounter
-                      ? const Color.fromARGB(255, 136, 211, 144)
-                      : const Color.fromARGB(255, 76, 177, 251),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isEncounter ? Icons.people_alt : Icons.generating_tokens,
-                  color: Colors.white,
-                  size: safeAreaWidth / 20,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: safeAreaWidth * 0.03),
-                child: nText(
-                  isEncounter ? "今日出会った人数" : "ポイント",
-                  color: Colors.white,
-                  fontSize: safeAreaWidth / 30,
-                  bold: 700,
-                ),
-              ),
-            ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.error,
+          color: Colors.white,
+          size: safeAreaWidth / 10,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: safeAreaHeight * 0.01),
+          child: nText("プロフィールの取得に失敗しました。",
+              color: Colors.white, fontSize: safeAreaWidth / 25, bold: 500),
+        )
+      ],
+    ),
+  );
+}
+
+Widget imgSetteingWidget(
+    BuildContext context, Uint8List? img, void Function() onTap) {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  final safeAreaHeight = safeHeight(context);
+  return Container(
+    alignment: Alignment.center,
+    height: safeAreaHeight * 0.16,
+    width: safeAreaWidth * 0.9,
+    decoration: BoxDecoration(
+      color: blackColor,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.bottomRight,
+        height: safeAreaHeight * 0.1,
+        width: safeAreaHeight * 0.1,
+        decoration: BoxDecoration(
+          image: img != null
+              ? DecorationImage(image: MemoryImage(img), fit: BoxFit.cover)
+              : notImg(),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              spreadRadius: 1.0,
+            )
+          ],
+          shape: BoxShape.circle,
+        ),
+        child: Container(
+          height: safeAreaHeight * 0.045,
+          width: safeAreaHeight * 0.045,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+            shape: BoxShape.circle,
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: safeAreaHeight * 0.005,
-            ),
-            child: nText("100P",
-                color: Colors.white, fontSize: safeAreaWidth / 10, bold: 700),
+          child: Icon(
+            Icons.photo_camera,
+            color: Colors.black.withOpacity(0.8),
           ),
-        ],
+        ),
       ),
     ),
   );

@@ -41,14 +41,15 @@ class WordSearchSheetWidget extends HookConsumerWidget {
           Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
           final GeoPoint getGeo = data['geo']["geopoint"] as GeoPoint;
           setList.add(StoreData(
-            postImgList: [],
-            logo: null,
-            id: doc.id,
-            name: nullCheckString(data["name"]) ?? "未設定",
-            address: nullCheckString(data["address"]) ?? "未設定",
-            businessHours: nullCheckString(data["business_hour"]) ?? "",
-            location: LatLng(getGeo.latitude, getGeo.longitude),
-          ));
+              postImgList: [],
+              logo: null,
+              id: doc.id,
+              searchWord: [],
+              name: nullCheckString(data["name"]) ?? "未設定",
+              address: nullCheckString(data["address"]) ?? "未設定",
+              businessHours: nullCheckString(data["business_hour"]) ?? "",
+              location: LatLng(getGeo.latitude, getGeo.longitude),
+              eventList: []));
         }
         if (context.mounted) {
           imgIndexList.value = imgRandomIndex(setList.length);

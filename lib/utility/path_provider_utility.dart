@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:lolo_app/model/user_data.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -48,24 +47,24 @@ Future<bool> writeUserData(
 }
 
 Future<UserData?> readUserData() async {
-  final file = await _localFile("user");
-  if (file != null) {
-    try {
-      final String contents = await file.readAsString();
-      final toDecode = jsonDecode(contents) as Map<String, dynamic>;
-      final imgListDecode = toDecode["img"] == ""
-          ? null
-          : base64Decode(toDecode["img"] as String);
-      final setData = UserData(
-          id: toDecode["id"] as String,
-          name: toDecode["name"] as String,
-          birthday: toDecode["birthday"] as String,
-          img: imgListDecode);
-      return setData;
-    } catch (e) {
-      return null;
-    }
-  } else {
+  try {
+    final file = await _localFile("user");
+    if (file == null) return null;
+    final String contents = await file.readAsString();
+    final Map<String, dynamic> toDecode = jsonDecode(contents);
+    final imgListDecode =
+        toDecode["img"] == "" ? null : base64Decode(toDecode["img"]);
+    final String id = toDecode["id"] ?? "";
+    final String name = toDecode["name"] ?? "";
+    final String birthday = toDecode["birthday"] ?? "";
+    return UserData(
+      id: id,
+      name: name,
+      birthday: birthday,
+      img: imgListDecode,
+      storeData: null,
+    );
+  } catch (e) {
     return null;
   }
 }

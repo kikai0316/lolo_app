@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
 import 'package:lolo_app/model/store_data.dart';
-import 'package:lolo_app/view/home/on_swiper.dart';
+import 'package:lolo_app/view/swiper/on_swiper.dart';
 
 final CarouselSliderController controller = CarouselSliderController();
 final ScrollController scrollController = ScrollController();

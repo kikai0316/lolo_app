@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,24 +9,28 @@ import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/utility/path_provider_utility.dart';
+import 'package:lolo_app/utility/crop_img_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/account/on_edit_text_sheet.dart';
+import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/account_widget.dart';
 
 TextEditingController? textController;
 
 class ProfileSetting extends HookConsumerWidget {
-  const ProfileSetting(
-      {super.key, required this.userData, required this.onSave});
+  const ProfileSetting({
+    super.key,
+    required this.userData,
+  });
   final UserData userData;
-  final void Function(UserData) onSave;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final isLoading = useState<bool>(false);
     final editName = useState<String>(userData.name);
+    final editLogo = useState<Uint8List?>(userData.img);
     final editBirthday = useState<String>(userData.birthday);
     final User? user = FirebaseAuth.instance.currentUser;
     final dataList = [
@@ -44,18 +49,28 @@ class ProfileSetting extends HookConsumerWidget {
 
     bool isDataCheck() {
       if (userData.name == editName.value &&
-          userData.birthday == editBirthday.value) {
+          userData.birthday == editBirthday.value &&
+          editLogo.value == userData.img) {
         return true;
       } else {
         return false;
       }
     }
 
-    void showSnackbar() {
-      errorSnackbar(
-        context,
-        message: "サーバーへの接続に問題が発生しました。しばらく時間を置いてから、再度お試しください。",
-      );
+    Future<void> getImg() async {
+      isLoading.value = true;
+      await getMobileImage(onSuccess: (value) async {
+        final cropLogo = await cropLogoImg(value);
+        if (context.mounted && cropLogo != null) {
+          editLogo.value = cropLogo;
+        }
+      }, onError: () {
+        errorSnackbar(
+          context,
+          message: "画像の取得に失敗しました。",
+        );
+      });
+      isLoading.value = false;
     }
 
     return Stack(
@@ -103,6 +118,13 @@ class ProfileSetting extends HookConsumerWidget {
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: safeAreaHeight * 0.03,
+                        ),
+                        child:
+                            imgSetteingWidget(context, editLogo.value, getImg),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(top: safeAreaHeight * 0.02),
                         child: Container(
@@ -170,8 +192,8 @@ class ProfileSetting extends HookConsumerWidget {
                                               TextEditingController(
                                                   text: editName.value);
                                           bottomSheet(context,
-                                              page: UserEditSheet(
-                                                isUserName: i == 0,
+                                              page: StringEditSheet(
+                                                title: "ユーザー名を入力",
                                                 initData: editName.value,
                                                 controller: textController!,
                                                 onTap: () async {
@@ -229,18 +251,29 @@ class ProfileSetting extends HookConsumerWidget {
                           isLoading.value = true;
                           primaryFocus?.unfocus();
                           final setData = UserData(
-                            img: userData.img,
-                            id: userData.id,
-                            name: editName.value,
-                            birthday: editBirthday.value,
-                          );
-                          final bool localWrite = await writeUserData(setData);
-                          if (localWrite) {
-                            onSave(setData);
+                              img: editLogo.value,
+                              id: userData.id,
+                              name: editName.value,
+                              birthday: editBirthday.value,
+                              storeData: userData.storeData);
+                          final notifier =
+                              ref.read(userDataNotifierProvider.notifier);
+                          final isUpData = await notifier.upData(setData);
+                          if (context.mounted) {
                             isLoading.value = false;
-                          } else {
-                            isLoading.value = false;
-                            showSnackbar();
+                            if (isUpData) {
+                              Navigator.pop(context);
+                              successSnackbar(
+                                context,
+                                "データ更新が正常に完了しました",
+                              );
+                            } else {
+                              errorSnackbar(
+                                context,
+                                message:
+                                    "システムエラーが発生しました。\n少し時間を置いてからもう一度お試しください。",
+                              );
+                            }
                           }
                         }
                       },

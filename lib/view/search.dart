@@ -47,8 +47,7 @@ class SearchPage extends HookConsumerWidget {
           extendBody: true,
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.black,
-          floatingActionButton: FloatingActionButton(onPressed: () async {}),
-          appBar: appBar(context, "探す"),
+          appBar: appBar(context, "探す", true),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -148,7 +147,7 @@ class SearchPage extends HookConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // SingleChildScrollView(
+                          //(
                           //     scrollDirection: Axis.horizontal,
                           //     child: Row(
                           //       mainAxisAlignment: MainAxisAlignment.start,
@@ -162,7 +161,13 @@ class SearchPage extends HookConsumerWidget {
                           //       ],
                           //     )),
                           if (nearStores.isNotEmpty) ...{
-                            titleWithCircle(context, "付近のお店"),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: safeAreaWidth * 0.03,
+                                  top: safeAreaHeight * 0.03,
+                                  bottom: safeAreaHeight * 0.005),
+                              child: titleWithCircle(context, "付近のお店"),
+                            ),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -177,6 +182,7 @@ class SearchPage extends HookConsumerWidget {
                                       i++) ...{
                                     OnStore(
                                       isFocus: false,
+                                      myDataOnTap: () {},
                                       storeData: nearStores[i],
                                       locationonTap: null,
                                       distance: calculateDistanceToString(
@@ -194,18 +200,7 @@ class SearchPage extends HookConsumerWidget {
                               ),
                             ),
                           },
-                          titleWithCircle(context, "付近のイベント"),
-                          SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  // for (int i = 0; i < 10; i++) ...{
-                                  eventWidget(context, "Club Camelot")
-                                  // }
-                                ],
-                              )),
-                          titleWithCircle(context, "アーティスト"),
+                          searchTitleWithCircle(context, "アーティスト"),
                           SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -240,57 +235,15 @@ class SearchPage extends HookConsumerWidget {
     );
   }
 
-  Widget titleWithCircle(BuildContext context, String text) {
-    final safeAreaWidth = MediaQuery.of(context).size.width;
+  Widget searchTitleWithCircle(BuildContext context, String title) {
     final safeAreaHeight = safeHeight(context);
+    final safeAreaWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: EdgeInsets.only(
           left: safeAreaWidth * 0.03,
-          right: safeAreaWidth * 0.03,
           top: safeAreaHeight * 0.03,
           bottom: safeAreaHeight * 0.005),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(right: safeAreaWidth * 0.02),
-            child: Container(
-              height: safeAreaWidth * 0.05,
-              width: safeAreaWidth * 0.05,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          nText(text,
-              color: Colors.white, fontSize: safeAreaWidth / 25, bold: 700)
-        ],
-      ),
+      child: titleWithCircle(context, title),
     );
-  }
-
-  Future<DateTime?> showCalendar(BuildContext context) async {
-    final dataTime = await showDatePicker(
-        context: context,
-        locale: const Locale('ja', 'JP'),
-        helpText: "日付を選択してください",
-        initialEntryMode: DatePickerEntryMode.calendarOnly,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
-        builder: (context, child) {
-          return Theme(
-            data: ThemeData.dark().copyWith(
-              colorScheme: const ColorScheme.dark(
-                  onPrimary: blackColor,
-                  onSurface: blueColor,
-                  primary: blueColor),
-              dialogBackgroundColor: blackColor,
-            ),
-            child: child!,
-          );
-        });
-    return dataTime;
   }
 }

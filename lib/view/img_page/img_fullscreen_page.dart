@@ -84,8 +84,8 @@ class ImgFullScreenPage extends HookConsumerWidget {
           onTap: () => onCancel(),
           child: Icon(
             Icons.close,
-            color: Colors.white.withOpacity(0.6),
-            size: safeAreaWidth / 12,
+            color: Colors.white.withOpacity(0.7),
+            size: safeAreaWidth / 9,
           ),
         ),
       ),

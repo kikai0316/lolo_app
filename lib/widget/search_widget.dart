@@ -62,7 +62,7 @@ Widget areaWidget(BuildContext context,
   );
 }
 
-Widget eventWidget(BuildContext context, String name) {
+Widget  searchEventWidget(BuildContext context, String name) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
   return Padding(

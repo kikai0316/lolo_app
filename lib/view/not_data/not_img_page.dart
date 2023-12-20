@@ -13,6 +13,7 @@ import 'package:lolo_app/utility/path_provider_utility.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/widget/app_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NotImgPage extends HookConsumerWidget {
@@ -49,11 +50,11 @@ class NotImgPage extends HookConsumerWidget {
         img.value = data.buffer.asUint8List();
       }
       final setData = UserData(
-        img: img.value,
-        id: userData.id,
-        name: userData.name,
-        birthday: userData.birthday,
-      );
+          img: img.value,
+          id: userData.id,
+          name: userData.name,
+          birthday: userData.birthday,
+          storeData: userData.storeData);
       final iswWite = await writeUserData(setData);
       if (iswWite) {
         final nextScreenWhisUserData = nextScreenWhisUserDataCheck(setData);
@@ -61,8 +62,9 @@ class NotImgPage extends HookConsumerWidget {
           // ignore: use_build_context_synchronously
           screenTransitionNormal(context, nextScreenWhisUserData);
         } else {
-          final nextScreenWithLocation =
-              await nextScreenWithLocationCheck(userData, ref);
+          final nextScreenWithLocation = await nextScreenWithLocationCheck(
+            userData,
+          );
           if (context.mounted) {
             screenTransitionNormal(context, nextScreenWithLocation);
           }
@@ -124,28 +126,10 @@ class NotImgPage extends HookConsumerWidget {
                           shape: BoxShape.circle,
                         ),
                         child: img.value != null
-                            ? GestureDetector(
-                                onTap: () => img.value = null,
-                                child: Container(
-                                  height: safeAreaWidth * 0.1,
-                                  width: safeAreaWidth * 0.1,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.5),
-                                        blurRadius: 10,
-                                        spreadRadius: 1.0,
-                                      )
-                                    ],
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
+                            ? deleteIconWithCircle(
+                                size: safeAreaWidth * 0.1,
+                                onDelete: () => img.value = null,
+                                padding: 0) //後
                             : null),
                   ),
                   Material(

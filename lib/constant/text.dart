@@ -16,18 +16,18 @@ Widget nText(
       decoration: TextDecoration.none,
       fontFamily: "Normal",
       fontVariations: [FontVariation("wght", bold)],
+      height: 1,
       color: color,
       fontSize: fontSize,
     ),
   );
 }
 
-Widget nTextWithShadow(
-  String text, {
-  required Color color,
-  required double fontSize,
-  required double bold,
-}) {
+Widget nTextWithShadow(String text,
+    {required Color color,
+    required double fontSize,
+    required double bold,
+    required double opacity}) {
   return Text(
     text,
     textAlign: TextAlign.center,
@@ -36,7 +36,7 @@ Widget nTextWithShadow(
       fontFamily: "Normal",
       shadows: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withOpacity(opacity),
           blurRadius: 10,
           spreadRadius: 1.0,
         )

@@ -59,7 +59,7 @@ void screenTransitionHero(BuildContext context, Widget page) {
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => page,
-        transitionDuration: const Duration(milliseconds: 200),
+        transitionDuration: const Duration(milliseconds: 100),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = 0.0;
           var end = 1.0;

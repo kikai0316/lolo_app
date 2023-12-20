@@ -211,7 +211,7 @@ class ImgConfirmation extends HookConsumerWidget {
                                   height: safeAreaHeight * 0.05,
                                   width: safeAreaWidth * 0.45,
                                   decoration: BoxDecoration(
-                                    color: i == 0 ? Colors.white : greenColor,
+                                    color: i == 0 ? Colors.white : blueColor,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.1),
@@ -222,8 +222,8 @@ class ImgConfirmation extends HookConsumerWidget {
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   child: nText(
-                                    i == 0 ? "他の画像を選択" : "画像を追加",
-                                    color: i == 0 ? blueColor2 : Colors.white,
+                                    i == 0 ? "他の画像を選択..." : "完了",
+                                    color: i == 0 ? blueColor : Colors.white,
                                     fontSize: safeAreaWidth / 30,
                                     bold: 700,
                                   ),

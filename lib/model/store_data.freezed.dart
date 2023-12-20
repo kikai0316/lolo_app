@@ -22,6 +22,8 @@ mixin _$StoreData {
   String get name => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get businessHours => throw _privateConstructorUsedError;
+  List<String> get searchWord => throw _privateConstructorUsedError;
+  List<EventType> get eventList => throw _privateConstructorUsedError;
   LatLng get location => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -41,6 +43,8 @@ abstract class $StoreDataCopyWith<$Res> {
       String name,
       String address,
       String businessHours,
+      List<String> searchWord,
+      List<EventType> eventList,
       LatLng location});
 }
 
@@ -63,6 +67,8 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
     Object? name = null,
     Object? address = null,
     Object? businessHours = null,
+    Object? searchWord = null,
+    Object? eventList = null,
     Object? location = null,
   }) {
     return _then(_value.copyWith(
@@ -90,6 +96,14 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
           ? _value.businessHours
           : businessHours // ignore: cast_nullable_to_non_nullable
               as String,
+      searchWord: null == searchWord
+          ? _value.searchWord
+          : searchWord // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eventList: null == eventList
+          ? _value.eventList
+          : eventList // ignore: cast_nullable_to_non_nullable
+              as List<EventType>,
       location: null == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -113,6 +127,8 @@ abstract class _$$StoreDataImplCopyWith<$Res>
       String name,
       String address,
       String businessHours,
+      List<String> searchWord,
+      List<EventType> eventList,
       LatLng location});
 }
 
@@ -133,6 +149,8 @@ class __$$StoreDataImplCopyWithImpl<$Res>
     Object? name = null,
     Object? address = null,
     Object? businessHours = null,
+    Object? searchWord = null,
+    Object? eventList = null,
     Object? location = null,
   }) {
     return _then(_$StoreDataImpl(
@@ -160,6 +178,14 @@ class __$$StoreDataImplCopyWithImpl<$Res>
           ? _value.businessHours
           : businessHours // ignore: cast_nullable_to_non_nullable
               as String,
+      searchWord: null == searchWord
+          ? _value._searchWord
+          : searchWord // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      eventList: null == eventList
+          ? _value._eventList
+          : eventList // ignore: cast_nullable_to_non_nullable
+              as List<EventType>,
       location: null == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -178,8 +204,12 @@ class _$StoreDataImpl implements _StoreData {
       required this.name,
       required this.address,
       required this.businessHours,
+      required final List<String> searchWord,
+      required final List<EventType> eventList,
       required this.location})
-      : _postImgList = postImgList;
+      : _postImgList = postImgList,
+        _searchWord = searchWord,
+        _eventList = eventList;
 
   final List<StoryImgType> _postImgList;
   @override
@@ -199,16 +229,32 @@ class _$StoreDataImpl implements _StoreData {
   final String address;
   @override
   final String businessHours;
+  final List<String> _searchWord;
+  @override
+  List<String> get searchWord {
+    if (_searchWord is EqualUnmodifiableListView) return _searchWord;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_searchWord);
+  }
+
+  final List<EventType> _eventList;
+  @override
+  List<EventType> get eventList {
+    if (_eventList is EqualUnmodifiableListView) return _eventList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_eventList);
+  }
+
   @override
   final LatLng location;
 
   @override
   String toString() {
-    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, location: $location)';
+    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, searchWord: $searchWord, eventList: $eventList, location: $location)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$StoreDataImpl &&
@@ -220,6 +266,10 @@ class _$StoreDataImpl implements _StoreData {
             (identical(other.address, address) || other.address == address) &&
             (identical(other.businessHours, businessHours) ||
                 other.businessHours == businessHours) &&
+            const DeepCollectionEquality()
+                .equals(other._searchWord, _searchWord) &&
+            const DeepCollectionEquality()
+                .equals(other._eventList, _eventList) &&
             (identical(other.location, location) ||
                 other.location == location));
   }
@@ -233,6 +283,8 @@ class _$StoreDataImpl implements _StoreData {
       name,
       address,
       businessHours,
+      const DeepCollectionEquality().hash(_searchWord),
+      const DeepCollectionEquality().hash(_eventList),
       location);
 
   @JsonKey(ignore: true)
@@ -250,6 +302,8 @@ abstract class _StoreData implements StoreData {
       required final String name,
       required final String address,
       required final String businessHours,
+      required final List<String> searchWord,
+      required final List<EventType> eventList,
       required final LatLng location}) = _$StoreDataImpl;
 
   @override
@@ -264,6 +318,10 @@ abstract class _StoreData implements StoreData {
   String get address;
   @override
   String get businessHours;
+  @override
+  List<String> get searchWord;
+  @override
+  List<EventType> get eventList;
   @override
   LatLng get location;
   @override
