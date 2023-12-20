@@ -241,33 +241,32 @@ class InformationContainerWidget extends HookConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Container(
-              alignment: Alignment.center,
-              width: safeAreaWidth * 1,
-              child: Stack(
+            GestureDetector(
+              onTap: () async {
+                if (isContainerOpen.value) {
+                  isContainerOpen.value = false;
+                  isDataOpen.value = false;
+                } else {
+                  isContainerOpen.value = true;
+                  await Future<void>.delayed(const Duration(milliseconds: 100));
+                  if (context.mounted) {
+                    isDataOpen.value = true;
+                  }
+                }
+              },
+              child: Container(
                 alignment: Alignment.center,
-                children: [
-                  nTextWithShadow("イベント情報",
-                      color: Colors.white,
-                      fontSize: safeAreaWidth / 22,
-                      opacity: 0.1,
-                      bold: 700),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () async {
-                        if (isContainerOpen.value) {
-                          isContainerOpen.value = false;
-                          isDataOpen.value = false;
-                        } else {
-                          isContainerOpen.value = true;
-                          await Future<void>.delayed(
-                              const Duration(milliseconds: 100));
-                          if (context.mounted) {
-                            isDataOpen.value = true;
-                          }
-                        }
-                      },
+                width: safeAreaWidth * 1,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    nTextWithShadow("イベント情報",
+                        color: Colors.white,
+                        fontSize: safeAreaWidth / 22,
+                        opacity: 0.1,
+                        bold: 700),
+                    Align(
+                      alignment: Alignment.centerRight,
                       child: Icon(
                         isDataOpen.value
                             ? Icons.expand_more
@@ -276,8 +275,8 @@ class InformationContainerWidget extends HookConsumerWidget {
                         size: safeAreaWidth / 10,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (isDataOpen.value) ...{

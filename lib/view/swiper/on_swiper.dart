@@ -44,6 +44,9 @@ class OnSwiper extends HookConsumerWidget {
               ),
               child: Stack(
                 children: [
+                  if (storeData.postImgList.isEmpty) ...{
+                    notPostWidget(context, storeData: storeData)
+                  },
                   tapEventWidget(
                     context,
                     nextOnTap: () {
@@ -61,9 +64,6 @@ class OnSwiper extends HookConsumerWidget {
                       }
                     },
                   ),
-                  if (storeData.postImgList.isEmpty) ...{
-                    notPostWidget(context, storeData: storeData)
-                  },
                   Align(
                     alignment: Alignment.topCenter,
                     child: appBarWidget(context,

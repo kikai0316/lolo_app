@@ -11,6 +11,7 @@ import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
+import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account.dart';
 import 'package:lolo_app/view/near_user.dart';
@@ -19,27 +20,31 @@ import 'package:lolo_app/view/store_post.dart';
 import 'package:lolo_app/view/swiper.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/view_model/marker_list.dart';
+import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/home_widget.dart';
 
 final ScrollController scrollController = ScrollController();
 
 class HomePage extends HookConsumerWidget {
-  HomePage({super.key, required this.userData, required this.locationData});
-  final UserData userData;
+  HomePage({super.key, required this.locationData, required this.myId});
   final Position locationData;
+  final String myId;
   final taskQueue = AsyncTaskQueue();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final isLoading = useState<bool>(true);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    final cameraPosition = useState<String?>(userData.id);
+    final cameraPosition = useState<String?>(null);
     final storeKeys = useState<Map<String, GlobalKey>>({});
     final mapController = useState<GoogleMapController?>(null);
     final myLocation =
         useState<LatLng>(LatLng(locationData.latitude, locationData.longitude));
     final allStores = ref.watch(allStoresNotifierProvider);
+    final userDataNotifier = ref.watch(userDataNotifierProvider);
     final markerList = ref.watch(markerListNotifierProvider);
+    final UserData? userDataNotifierWhen = userDataNotifier.when(
+        data: (data) => data, error: (e, s) => null, loading: () => null);
     final List<StoreData> allStoresWhen = allStores.when(
       data: (value) {
         if (value == null) {
@@ -168,7 +173,7 @@ class HomePage extends HookConsumerWidget {
                     locationData.longitude,
                   );
                   if (distanceToUser < 10) {
-                    cameraPosition.value = userData.id;
+                    cameraPosition.value = myId;
                   } else {
                     for (var marker in markerListWhen) {
                       double distanceToMarker = Geolocator.distanceBetween(
@@ -197,7 +202,7 @@ class HomePage extends HookConsumerWidget {
                       myLocation: locationData,
                     ),
                     for (int i = 0; i < 4; i++) ...{
-                      if (i != 3 || cameraPosition.value != userData.id) ...{
+                      if (i != 3 || cameraPosition.value != myId) ...{
                         Padding(
                           padding: EdgeInsets.only(
                               right: safeAreaWidth * 0.03,
@@ -231,12 +236,17 @@ class HomePage extends HookConsumerWidget {
                                   ));
                             }
                             if (i == 2) {
-                              screenTransitionToTop(
-                                  context,
-                                  NearUserPage(
-                                    key: key,
-                                    userData: userData,
-                                  ));
+                              if (userDataNotifierWhen != null) {
+                                screenTransitionToTop(
+                                    context,
+                                    NearUserPage(
+                                        key: key,
+                                        userData: userDataNotifierWhen));
+                              } else {
+                                errorSnackbar(context,
+                                    message:
+                                        "ただいまデータを取得しています。しばらく時間を置いてから、もう一度お試しください。");
+                              }
                             }
                             if (i == 3) {
                               mapController.value?.animateCamera(
@@ -310,7 +320,7 @@ class HomePage extends HookConsumerWidget {
                   child: NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification notification) {
                       if (notification is ScrollStartNotification) {
-                        if (cameraPosition.value != userData.id) {
+                        if (cameraPosition.value != myId) {
                           cameraPosition.value = null;
                         }
                       }
@@ -326,24 +336,27 @@ class HomePage extends HookConsumerWidget {
                           SizedBox(
                             width: safeAreaWidth * 0.05,
                           ),
-                          if (userData.storeData != null) ...{
+                          if (userDataNotifierWhen?.storeData != null) ...{
                             OnStore(
                               isFocus: false,
                               myDataOnTap: () => screenTransitionToTop(
                                   context,
                                   StorePostPage(
-                                    storeData: userData.storeData!,
+                                    storeData: userDataNotifierWhen.storeData!,
                                   )),
-                              storeData: userData.storeData!,
+                              storeData: userDataNotifierWhen!.storeData!,
                               locationonTap: null,
                               distance: calculateDistanceToString(
-                                  userData.storeData!.location,
+                                  userDataNotifierWhen.storeData!.location,
                                   LatLng(locationData.latitude,
                                       locationData.longitude)),
                               onTap: () => screenTransitionHero(
                                 context,
                                 SwiperPage(
-                                  storeList: [userData.storeData!],
+                                  storeList: [
+                                    userDataNotifierWhen.storeData!,
+                                    ...allStoresWhen
+                                  ],
                                   index: 0,
                                 ),
                               ),
@@ -352,7 +365,7 @@ class HomePage extends HookConsumerWidget {
                           for (int i = 0; i < allStoresWhen.length; i++) ...{
                             if (containsMarkerWithId(
                                     markerListWhen, allStoresWhen[i].id) &&
-                                (userData.storeData?.id ?? "") !=
+                                (userDataNotifierWhen!.storeData?.id ?? "") !=
                                     allStoresWhen[i].id) ...{
                               OnStore(
                                 key: storeKeys.value[allStoresWhen[i].id],

@@ -96,14 +96,6 @@ class NearUserPage extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.all(safeAreaWidth * 0.02),
-                  child: nText("あなた",
-                      color: Colors.grey,
-                      fontSize: safeAreaWidth / 20,
-                      bold: 700),
-                ),
-                myDataWidget(context, userData),
                 if (deviceListWhen != null) ...{
                   Padding(
                       padding: EdgeInsets.only(
