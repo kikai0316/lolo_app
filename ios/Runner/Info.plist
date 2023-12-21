@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+<dict> 
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>「lolo_app」は、リアルタイムのナビゲーションを提供するため、また、お客様の現在位置に基づいた重要な通知を送信するために、位置情報のアクセスが必要です。</string>
     <key>NSBonjourServices</key>
 	<array>
 		<string>lolo._tcp</string>
