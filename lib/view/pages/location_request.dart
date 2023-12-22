@@ -5,14 +5,13 @@ import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
-import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RequestLocationsPage extends HookConsumerWidget {
-  const RequestLocationsPage({super.key, required this.userData});
-  final UserData userData;
+  const RequestLocationsPage({
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
@@ -174,16 +173,16 @@ class RequestLocationsPage extends HookConsumerWidget {
                         try {
                           isLoading.value = true;
                           await Permission.locationWhenInUse.request();
-
-                          final nextScreenWithLocation =
-                              await nextScreenWithLocationCheck(
-                            userData,
-                          );
-                          if (context.mounted) {
-                            isLoading.value = false;
-                            screenTransitionNormal(
-                                context, nextScreenWithLocation);
-                          }
+                          // final nextScreenWithLocation =//後
+                          //     await nextScreenWithLocationCheck(
+                          //   userData,
+                          // );
+                          // if (context.mounted) {
+                          //   isLoading.value = false;
+                          //   screenTransitionNormal(
+                          //       context, nextScreenWithLocation);
+                          // }
+                          //
                         } catch (e) {
                           return;
                         }

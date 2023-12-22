@@ -16,7 +16,7 @@ import 'package:lolo_app/utility/crop_img_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/widget/app_widget.dart';
-import 'package:lolo_app/widget/login_widget.dart';
+import 'package:lolo_app/widget/login/login_widget.dart';
 import 'package:http/http.dart' as http;
 
 class StoreSetteingSheetWidget extends HookConsumerWidget {

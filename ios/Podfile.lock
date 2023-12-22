@@ -713,9 +713,6 @@ PODS:
   - flutter_line_sdk (2.3.6):
     - Flutter
     - LineSDKSwift (~> 5.3)
-  - flutter_nearby_connections (0.0.1):
-    - Flutter
-    - SwiftyJSON (~> 4.0)
   - flutter_secure_storage (6.0.0):
     - Flutter
   - geolocator_apple (1.2.0):
@@ -850,7 +847,6 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - SwiftyJSON (4.3.0)
   - TOCropViewController (2.6.1)
   - url_launcher_ios (0.0.1):
     - Flutter
@@ -863,7 +859,6 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_line_sdk (from `.symlinks/plugins/flutter_line_sdk/ios`)
-  - flutter_nearby_connections (from `.symlinks/plugins/flutter_nearby_connections/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
@@ -903,7 +898,6 @@ SPEC REPOS:
     - RecaptchaInterop
     - SDWebImage
     - SDWebImageWebPCoder
-    - SwiftyJSON
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -921,8 +915,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_image_compress_common/ios"
   flutter_line_sdk:
     :path: ".symlinks/plugins/flutter_line_sdk/ios"
-  flutter_nearby_connections:
-    :path: ".symlinks/plugins/flutter_nearby_connections/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   geolocator_apple:
@@ -963,7 +955,6 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_line_sdk: 76198d6c56481253ffda5af6dc8632d1f0c7db67
-  flutter_nearby_connections: 68c6cb88dcbf781e74adac01f4e93b853a30ee34
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   google_maps_flutter_ios: 590249c67f34f422122c232f2a626192adbc78ee
@@ -986,7 +977,6 @@ SPEC CHECKSUMS:
   SDWebImage: 7ac2b7ddc5e8484c79aa90fc4e30b149d6a2c88f
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
