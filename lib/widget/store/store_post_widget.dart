@@ -5,8 +5,8 @@ import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/img_page/img_fullscreen_page.dart';
-import 'package:lolo_app/view/store/event_fullscreen_sheet.dart';
+import 'package:lolo_app/view/pages/img_fullscreen_page.dart';
+import 'package:lolo_app/view/pages/event_fullscreen_sheet.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 
 Widget storeTitleWithCircleAndAddWidget(BuildContext context,

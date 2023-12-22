@@ -3,28 +3,30 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/constant/url.dart';
+import 'package:lolo_app/model/user_data.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/login.dart';
-import 'package:lolo_app/view_model/user_data.dart';
-import 'package:lolo_app/widget/account_widget.dart';
+import 'package:lolo_app/view/login/login.dart';
+import 'package:lolo_app/widget/account/account_widget.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 
 class AccountPage extends HookConsumerWidget {
-  const AccountPage({
-    super.key,
-  });
+  const AccountPage({super.key, required this.userData});
+  final UserData userData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    final notifierUserData = ref.watch(userDataNotifierProvider);
-    final int settingTitleLength = notifierUserData.when(
-        data: (value) => value?.storeData != null
-            ? settingTitle.length - 1
-            : settingTitle.length,
-        error: (e, s) => settingTitle.length,
-        loading: () => settingTitle.length);
+    final settingTitleLength = userData.storeData != null
+        ? settingTitle.length - 1
+        : settingTitle.length;
+    // final notifierUserData = ref.watch(userDataNotifierProvider);
+    // final int settingTitleLength = notifierUserData.when(
+    //     data: (value) => value?.storeData != null
+    //         ? settingTitle.length - 1
+    //         : settingTitle.length,
+    //     error: (e, s) => settingTitle.length,
+    //     loading: () => settingTitle.length);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: appBar(context, "アカウント設定", true),
@@ -34,10 +36,7 @@ class AccountPage extends HookConsumerWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(top: safeAreaHeight * 0.02),
-                child: profileWidget(
-                  context,
-                  data: notifierUserData,
-                ),
+                child: profileWidget(context, userData: userData),
               ),
               Align(
                 alignment: Alignment.centerLeft,

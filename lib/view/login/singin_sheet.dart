@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/widget/login_widget.dart';
+import 'package:lolo_app/widget/login/login_widget.dart';
 
 class SingInSheetWidget extends HookConsumerWidget {
   SingInSheetWidget({super.key, required this.onTap});

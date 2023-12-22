@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -5,26 +6,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
-import 'package:lolo_app/model/store_data.dart';
-import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/search/event_search_sheet.dart';
 import 'package:lolo_app/view/search/station_search_sheet.dart';
 import 'package:lolo_app/view/search/word_search_sheet.dart';
-import 'package:lolo_app/view/swiper.dart';
 import 'package:lolo_app/widget/app_widget.dart';
-import 'package:lolo_app/widget/home_widget.dart';
-import 'package:lolo_app/widget/search_widget.dart';
+import 'package:lolo_app/widget/search/search_widget.dart';
 
 class SearchPage extends HookConsumerWidget {
-  SearchPage(
-      {super.key,
-      required this.nearStores,
-      required this.locationData,
-      required this.onSearch});
-  final List<StoreData> nearStores;
-  final LatLng locationData;
-  final void Function(LatLng)? onSearch;
+  SearchPage({
+    super.key,
+    required this.locationData,
+  });
+  final Position locationData;
   final TextEditingController textController = TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +32,6 @@ class SearchPage extends HookConsumerWidget {
       isLoading.value = true;
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
-      onSearch!(location);
     }
 
     return Stack(
@@ -160,46 +153,7 @@ class SearchPage extends HookConsumerWidget {
                           //         }
                           //       ],
                           //     )),
-                          if (nearStores.isNotEmpty) ...{
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: safeAreaWidth * 0.03,
-                                  top: safeAreaHeight * 0.03,
-                                  bottom: safeAreaHeight * 0.005),
-                              child: titleWithCircle(context, "付近のお店"),
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: safeAreaWidth * 0.02,
-                                  ),
-                                  for (int i = 0;
-                                      i < nearStores.length;
-                                      i++) ...{
-                                    OnStore(
-                                      isFocus: false,
-                                      myDataOnTap: () {},
-                                      storeData: nearStores[i],
-                                      locationonTap: null,
-                                      distance: calculateDistanceToString(
-                                          nearStores[i].location, locationData),
-                                      onTap: () => screenTransitionHero(
-                                        context,
-                                        SwiperPage(
-                                          storeList: nearStores,
-                                          index: i,
-                                        ),
-                                      ),
-                                    ),
-                                  },
-                                ],
-                              ),
-                            ),
-                          },
+
                           searchTitleWithCircle(context, "アーティスト"),
                           SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
