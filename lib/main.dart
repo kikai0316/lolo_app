@@ -7,8 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/firebase_options.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/login.dart';
-import 'package:lolo_app/view_model/user_data.dart';
+import 'package:lolo_app/view/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -27,7 +26,7 @@ class MyApp extends HookConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    Future<void> cacheSecureStorage() async {
+    Future<Widget> locationCheck() async {
       final prefs = await SharedPreferences.getInstance();
       final isFirst = prefs.getBool('is_first');
       if (isFirst == null || isFirst) {
@@ -36,6 +35,8 @@ class MyApp extends HookConsumerWidget {
         await storage.deleteAll();
         await prefs.setBool('is_first', false);
       }
+
+      return await nextScreenWithLocationCheck();
     }
 
     return MaterialApp(
@@ -45,9 +46,9 @@ class MyApp extends HookConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder<void>(
-        future: cacheSecureStorage(),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+      home: FutureBuilder<Widget>(
+        future: locationCheck(),
+        builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const WithIconInLoadingPage();
@@ -57,50 +58,53 @@ class MyApp extends HookConsumerWidget {
               );
             }
           }
-          return const InitialWidget();
+          return snapshot.data ??
+              const StartPage(
+                isGeneral: true,
+              );
         },
       ),
     );
   }
 }
 
-class InitialWidget extends HookConsumerWidget {
-  const InitialWidget({
-    super.key,
-  });
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userDataNotifier = ref.watch(userDataNotifierProvider);
+// class InitialWidget extends HookConsumerWidget {
+//   const InitialWidget({
+//     super.key,
+//   });
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final userDataNotifier = ref.watch(userDataNotifierProvider);
 
-    return userDataNotifier.when(
-        data: (data) => data != null
-            ? FutureBuilder<Widget>(
-                future: nextScreenWithLocationCheck(
-                  data,
-                ),
-                builder:
-                    (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const WithIconInLoadingPage();
-                    } else if (snapshot.hasError) {
-                      return const StartPage(
-                        isGeneral: true,
-                      );
-                    }
-                  }
-                  return snapshot.data ??
-                      const StartPage(
-                        isGeneral: true,
-                      );
-                },
-              )
-            : const StartPage(
-                isGeneral: true,
-              ),
-        error: (e, s) => const StartPage(
-              isGeneral: true,
-            ),
-        loading: () => const WithIconInLoadingPage());
-  }
-}
+//     return userDataNotifier.when(
+//         data: (data) => data != null
+//             ? FutureBuilder<Widget>(
+//                 future: nextScreenWithLocationCheck(
+//                   data,
+//                 ),
+//                 builder:
+//                     (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+//                   if (snapshot.connectionState != ConnectionState.done) {
+//                     if (snapshot.connectionState == ConnectionState.waiting) {
+//                       return const WithIconInLoadingPage();
+//                     } else if (snapshot.hasError) {
+//                       return const StartPage(
+//                         isGeneral: true,
+//                       );
+//                     }
+//                   }
+//                   return snapshot.data ??
+//                       const StartPage(
+//                         isGeneral: true,
+//                       );
+//                 },
+//               )
+//             : const StartPage(
+//                 isGeneral: true,
+//               ),
+//         error: (e, s) => const StartPage(
+//               isGeneral: true,
+//             ),
+//         loading: () => const WithIconInLoadingPage());
+//   }
+// }

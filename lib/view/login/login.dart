@@ -26,7 +26,7 @@ import 'package:lolo_app/view/login/login_sheet.dart';
 import 'package:lolo_app/view/login/store_information_sheet.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/app_widget.dart';
-import 'package:lolo_app/widget/login_widget.dart';
+import 'package:lolo_app/widget/login/login_widget.dart';
 
 class StartPage extends HookConsumerWidget {
   const StartPage({

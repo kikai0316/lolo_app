@@ -10,7 +10,7 @@ import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account/on_store_setting.dart';
 import 'package:lolo_app/view_model/user_data.dart';
-import 'package:lolo_app/widget/account_widget.dart';
+import 'package:lolo_app/widget/account/account_widget.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 
 class StoreInformation extends HookConsumerWidget {

@@ -13,7 +13,7 @@ import 'package:lolo_app/utility/firebase_firestore_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 
-import 'package:lolo_app/widget/search_widget.dart';
+import 'package:lolo_app/widget/search/search_widget.dart';
 
 class WordSearchSheetWidget extends HookConsumerWidget {
   const WordSearchSheetWidget(
