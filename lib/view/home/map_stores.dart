@@ -7,11 +7,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lolo_app/constant/color.dart';
+import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
+import 'package:lolo_app/utility/screen_transition_utility.dart';
+import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/home/swiper.dart';
 import 'package:lolo_app/view_model/marker_list.dart';
+import 'package:lolo_app/widget/home/home_page_widget.dart';
 import 'package:lolo_app/widget/home/map_stores_widget.dart';
 
-final ScrollController scrollController = ScrollController();
 final taskQueue = AsyncTaskQueue();
 
 class MapStoresPage extends HookConsumerWidget {
@@ -25,40 +29,23 @@ class MapStoresPage extends HookConsumerWidget {
   final List<StoreData> allStores;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final safeAreaHeight = safeHeight(context);
-    // final isLoading = useState<bool>(true);
+    final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    final cameraPosition = useState<String?>(null);
-    final storeKeys = useState<Map<String, GlobalKey>>({});
+    final focusStoreData = useState<StoreData?>(null);
+    final isMyPosition = useState<bool>(true);
+    final defaultCameraPosition = CameraPosition(
+      target: LatLng(locationData.latitude, locationData.longitude),
+      zoom: 7,
+      tilt: 10,
+    );
+    final zoomLevel = useState<CameraPosition>(defaultCameraPosition);
     final mapController = useState<GoogleMapController?>(null);
-    final myLocation =
-        useState<LatLng>(LatLng(locationData.latitude, locationData.longitude));
     final markerList = ref.watch(markerListNotifierProvider);
-
     final Set<Marker> markerListWhen = markerList.when(
       data: (value) => value,
       error: (e, s) => {},
       loading: () => {},
     );
-    void scrollToStore(String storeId) {
-      final key = storeKeys.value[storeId];
-      if (key == null) return;
-
-      final context = key.currentContext;
-      if (context == null) return;
-
-      final renderBox = context.findRenderObject() as RenderBox;
-      final position = renderBox.localToGlobal(Offset.zero);
-      final offset = position.dx;
-      if (offset < 0 || offset > safeAreaWidth) {
-        scrollController.animateTo(
-          scrollController.offset + offset - (safeAreaWidth * 0.2),
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    }
-
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -82,19 +69,6 @@ class MapStoresPage extends HookConsumerWidget {
                                 ref.read(markerListNotifierProvider.notifier);
                             notifier.addData(
                               Marker(
-                                onTap: () async {
-                                  mapController.value?.animateCamera(
-                                    CameraUpdate.newCameraPosition(
-                                      CameraPosition(
-                                        target: allStores[i].location,
-                                        zoom: 17.5,
-                                        tilt: 13,
-                                      ),
-                                    ),
-                                  );
-
-                                  scrollToStore(allStores[i].id);
-                                },
                                 markerId: MarkerId(allStores[i].id),
                                 position: LatLng(allStores[i].location.latitude,
                                     allStores[i].location.longitude),
@@ -107,57 +81,67 @@ class MapStoresPage extends HookConsumerWidget {
                 }
               },
               GoogleMap(
-                myLocationButtonEnabled: false,
-                myLocationEnabled: true,
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                      myLocation.value.latitude, myLocation.value.longitude),
-                  zoom: 7,
-                  tilt: 10,
-                ),
-                onMapCreated: (controller) {
-                  if (context.mounted) {
-                    mapController.value = controller;
-                    rootBundle
-                        .loadString("assets/map/map_style.json")
-                        .then((string) {
-                      controller.setMapStyle(string);
-                    });
-                  }
-                },
-                onCameraMove: (CameraPosition position) {
-                  double distanceToUser = Geolocator.distanceBetween(
-                    position.target.latitude,
-                    position.target.longitude,
-                    locationData.latitude,
-                    locationData.longitude,
-                  );
-                  if (distanceToUser < 10) {
-                    cameraPosition.value = myId;
-                  } else {
-                    for (var marker in markerListWhen) {
-                      double distanceToMarker = Geolocator.distanceBetween(
-                        position.target.latitude,
-                        position.target.longitude,
-                        marker.position.latitude,
-                        marker.position.longitude,
-                      );
-                      if (distanceToMarker < 10) {
-                        cameraPosition.value = marker.markerId.value;
-                        break;
-                      } else {
-                        cameraPosition.value = null;
-                      }
+                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  initialCameraPosition: CameraPosition(
+                    target:
+                        LatLng(locationData.latitude, locationData.longitude),
+                    zoom: 7,
+                    tilt: 10,
+                  ),
+                  onMapCreated: (controller) {
+                    if (context.mounted) {
+                      mapController.value = controller;
+                      rootBundle
+                          .loadString("assets/map/map_style.json")
+                          .then((string) {
+                        controller.setMapStyle(string);
+                      });
                     }
-                  }
-                },
-                onTap: (value) async {},
-                markers: markerListWhen,
-              ),
+                  },
+                  onCameraMove: (CameraPosition position) {
+                    double distanceToUser = Geolocator.distanceBetween(
+                      position.target.latitude,
+                      position.target.longitude,
+                      locationData.latitude,
+                      locationData.longitude,
+                    );
+                    isMyPosition.value = distanceToUser < 10;
+                    zoomLevel.value = CameraPosition(
+                        target: position.target,
+                        zoom: zoomLevel.value.zoom,
+                        tilt: 10);
+                  },
+                  markers: {
+                    for (final item in markerListWhen) ...{
+                      Marker(
+                          onTap: () async {
+                            final setData = CameraPosition(
+                              target: item.position,
+                              zoom: 17.5,
+                              tilt: 13,
+                            );
+                            mapController.value?.animateCamera(
+                              CameraUpdate.newCameraPosition(setData),
+                            );
+                            final int index = allStores.indexWhere(
+                                (storeData) =>
+                                    storeData.id == item.mapsId.value);
+                            if (index != -1) {
+                              focusStoreData.value = allStores[index];
+                              zoomLevel.value = setData;
+                            }
+                          },
+                          markerId: item.mapsId,
+                          position: item.position,
+                          icon: item.icon),
+                    }
+                  }),
               SafeArea(
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Padding(
                         padding: EdgeInsets.all(safeAreaWidth * 0.03),
@@ -172,180 +156,134 @@ class MapStoresPage extends HookConsumerWidget {
                           isLocation: false,
                         ),
                       ),
+                      Padding(
+                        padding: EdgeInsets.all(safeAreaWidth * 0.03),
+                        child: SizedBox(
+                          width: safeAreaWidth * 0.15,
+                          height: safeAreaHeight * 0.6,
+                          child: RotatedBox(
+                              quarterTurns: -1,
+                              child: Slider(
+                                activeColor: blueColor2,
+                                inactiveColor: blueColor2,
+                                thumbColor: Colors.white,
+                                value: zoomLevel.value.zoom,
+                                min: 5.0,
+                                max: 20.0,
+                                divisions: 3000,
+                                onChanged: (double value) {
+                                  zoomLevel.value = CameraPosition(
+                                      target: zoomLevel.value.target,
+                                      zoom: value,
+                                      tilt: zoomLevel.value.tilt);
+                                  mapController.value?.animateCamera(
+                                    CameraUpdate.newCameraPosition(
+                                        zoomLevel.value),
+                                  );
+                                },
+                              )),
+                        ),
+                      ),
+                      if (!isMyPosition.value)
+                        Padding(
+                          padding: EdgeInsets.all(safeAreaWidth * 0.03),
+                          child: mapButtonWidget(
+                            context,
+                            onTap: () => mapController.value?.animateCamera(
+                              CameraUpdate.newCameraPosition(
+                                  defaultCameraPosition),
+                            ),
+                            widget: Icon(
+                              Icons.near_me,
+                              color: Colors.white,
+                              size: safeAreaWidth / 10,
+                            ),
+                            isLocation: true,
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              )
-              // SafeArea(
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.end,
-              //     children: [
-              //       MainScreenWidget(
-              //         myLocation: locationData,
-              //       ),
-              //       for (int i = 0; i < 4; i++) ...{
-              //         if (i != 3 || cameraPosition.value != myId) ...{
-              //           Padding(
-              //             padding: EdgeInsets.only(
-              //                 right: safeAreaWidth * 0.03,
-              //                 top: safeAreaHeight * 0.015),
-              //             child: otherWidget(context, onTap: () async {
-              //               // if (i == 1) {
-              //               //   screenTransitionNormal(
-              //               //       context,
-              //               //       SearchPage(
-              //               //         locationData: LatLng(locationData.latitude,
-              //               //             locationData.longitude),
-              //               //       ));
-              //               // }
-              //               if (i == 2) {
-              //                 if (userDataNotifierWhen != null) {
-              //                   screenTransitionToTop(
-              //                       context,
-              //                       NearUserPage(
-              //                           key: key,
-              //                           userData: userDataNotifierWhen));
-              //                 } else {
-              //                   errorSnackbar(context,
-              //                       message:
-              //                           "ただいまデータを取得しています。しばらく時間を置いてから、もう一度お試しください。");
-              //                 }
-              //               }
-              //               if (i == 3) {
-              //                 mapController.value?.animateCamera(
-              //                   CameraUpdate.newCameraPosition(
-              //                     CameraPosition(
-              //                       target: LatLng(locationData.latitude,
-              //                           locationData.longitude),
-              //                       zoom: 7,
-              //                       tilt: 10,
-              //                     ),
-              //                   ),
-              //                 );
-              //               }
-              //             },
-              //                 isLocation: i == 3,
-              //                 widget: Stack(
-              //                   children: [
-              //                     if (i == 0) ...{
-              //                       imgIcon(
-              //                           file: "assets/img/user_icon.png",
-              //                           padding: safeAreaWidth * 0.03),
-              //                       userIconWithSettelingIcon(context)
-              //                     } else if (i == 1) ...{
-              //                       imgIcon(
-              //                           file: "assets/img/search_icon.png",
-              //                           padding: safeAreaWidth * 0.035)
-              //                     } else if (i == 2) ...{
-              //                       imgIcon(
-              //                           file: "assets/img/radar_icon.png",
-              //                           padding: safeAreaWidth * 0.025)
-              //                     } else ...{
-              //                       Icon(
-              //                         Icons.near_me,
-              //                         color: Colors.white,
-              //                         size: safeAreaWidth / 10,
-              //                       )
-              //                     }
-              //                   ],
-              //                 )),
-              //           ),
-              //         }
-              //       },
-              //     ],
-              //   ),
-              // ),
-
-              // SafeArea(
-              //   child: Align(
-              //     alignment: Alignment.bottomLeft,
-              //     child: NotificationListener<ScrollNotification>(
-              //       onNotification: (ScrollNotification notification) {
-              //         if (notification is ScrollStartNotification) {
-              //           if (cameraPosition.value != myId) {
-              //             cameraPosition.value = null;
-              //           }
-              //         }
-              //         return true;
-              //       },
-              //       child: SingleChildScrollView(
-              //         controller: scrollController,
-              //         scrollDirection: Axis.horizontal,
-              //         child: Row(
-              //           mainAxisAlignment: MainAxisAlignment.start,
-              //           crossAxisAlignment: CrossAxisAlignment.end,
-              //           children: [
-              //             SizedBox(
-              //               width: safeAreaWidth * 0.05,
-              //             ),
-              //             if (userDataNotifierWhen?.storeData != null) ...{
-              //               // OnStore(
-              //               //   isFocus: false,
-              //               //   myDataOnTap: () => screenTransitionToTop(
-              //               //       context,
-              //               //       StorePostPage(
-              //               //         storeData: userDataNotifierWhen.storeData!,
-              //               //       )),
-              //               //   storeData: userDataNotifierWhen!.storeData!,
-              //               //   locationonTap: null,
-              //               //   distance: calculateDistanceToString(
-              //               //       userDataNotifierWhen.storeData!.location,
-              //               //       LatLng(locationData.latitude,
-              //               //           locationData.longitude)),
-              //               //   onTap: () => screenTransitionHero(
-              //               //     context,
-              //               //     SwiperPage(
-              //               //       storeList: [
-              //               //         userDataNotifierWhen.storeData!,
-              //               //         ...allStoresWhen
-              //               //       ],
-              //               //       index: 0,
-              //               //     ),
-              //               //   ),
-              //               // ),
-              //             },
-              //             for (int i = 0; i < allStoresWhen.length; i++) ...{
-              //               if (containsMarkerWithId(
-              //                       markerListWhen, allStoresWhen[i].id) &&
-              //                   (userDataNotifierWhen!.storeData?.id ?? "") !=
-              //                       allStoresWhen[i].id) ...{
-              //                 // OnStore(
-              //                 //   key: storeKeys.value[allStoresWhen[i].id],
-              //                 //   isFocus:
-              //                 //       cameraPosition.value == allStoresWhen[i].id,
-              //                 //   myDataOnTap: null,
-              //                 //   storeData: allStoresWhen[i],
-              //                 //   locationonTap: () =>
-              //                 //       mapController.value?.animateCamera(
-              //                 //     CameraUpdate.newCameraPosition(
-              //                 //       CameraPosition(
-              //                 //         target: allStoresWhen[i].location,
-              //                 //         zoom: 17.5,
-              //                 //         tilt: 10,
-              //                 //       ),
-              //                 //     ),
-              //                 //   ),
-              //                 //   distance: calculateDistanceToString(
-              //                 //       allStoresWhen[i].location,
-              //                 //       LatLng(locationData.latitude,
-              //                 //           locationData.longitude)),
-              //                 //   onTap: () => screenTransitionHero(
-              //                 //     context,
-              //                 //     SwiperPage(
-              //                 //       storeList: allStoresWhen,
-              //                 //       index: i,
-              //                 //     ),
-              //                 //   ),
-              //                 // ),
-              //               }
-              //             },
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // if (isLoading.value) const WithIconInLoadingPage()
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                    alignment: Alignment.center,
+                    height: safeAreaHeight * 0.1,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          spreadRadius: 1.0,
+                        ),
+                      ],
+                      color: blueColor2,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: focusStoreData.value == null
+                        ? nText("マーカーをタップしてください。",
+                            color: Colors.white,
+                            fontSize: safeAreaWidth / 25,
+                            bold: 700)
+                        : null),
+              ),
+              if (focusStoreData.value != null)
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: safeAreaHeight * 0.03),
+                      child: SizedBox(
+                        height: safeAreaHeight * 0.13,
+                        width: safeAreaWidth * 0.9,
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            OnStore(
+                              storeData: focusStoreData.value!,
+                              distance: calculateDistanceToString(
+                                  focusStoreData.value!.location,
+                                  LatLng(locationData.latitude,
+                                      locationData.longitude)),
+                              onTap: () => screenTransitionHero(
+                                context,
+                                SwiperPage(
+                                  storeList: [focusStoreData.value!],
+                                  index: 0,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  focusStoreData.value = null;
+                                  mapController.value?.animateCamera(
+                                    CameraUpdate.newCameraPosition(
+                                      CameraPosition(
+                                        target: LatLng(locationData.latitude,
+                                            locationData.longitude),
+                                        zoom: 7,
+                                        tilt: 10,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.cancel,
+                                  color: Colors.white.withOpacity(0.8),
+                                  size: safeAreaWidth / 14,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )),
             ],
           )),
     );
@@ -353,33 +291,6 @@ class MapStoresPage extends HookConsumerWidget {
 
   bool containsMarkerWithId(Set<Marker> markers, String specificId) {
     return markers.any((marker) => marker.markerId.value == specificId);
-  }
-
-  bool containsStoreDataWithId(List<StoreData> storeList, String specificId) {
-    return storeList.any((marker) => marker.id == specificId);
-  }
-
-  Widget userIconWithSettelingIcon(BuildContext context) {
-    final safeAreaWidth = MediaQuery.of(context).size.width;
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: Padding(
-        padding: EdgeInsets.all(safeAreaWidth * 0.015),
-        child: Container(
-            alignment: Alignment.center,
-            height: safeAreaWidth * 0.06,
-            width: safeAreaWidth * 0.06,
-            decoration: const BoxDecoration(
-              color: blackColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.settings,
-              color: Colors.white,
-              size: safeAreaWidth / 20,
-            )),
-      ),
-    );
   }
 }
 

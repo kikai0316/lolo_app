@@ -609,10 +609,10 @@ packages:
     dependency: "direct main"
     description:
       name: geoflutterfire_plus
-      sha256: ae21eb939a3708cc6af0fdf023c44e53b4bb6e0342145e89ba7a7e76d033b2ed
+      sha256: d0dd09aa3da8805ead95b511e5b554e6ca12b5eef3960e171f9bd477030894e4
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.19"
+    version: "0.0.20"
   geolocator:
     dependency: "direct main"
     description:

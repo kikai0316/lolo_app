@@ -94,17 +94,20 @@ class HomePage2 extends HookConsumerWidget {
                       width: safeAreaWidth * 0.03,
                     ),
                     for (int i = 0; i < allStoresWhen.length; i++) ...{
-                      OnStore(
-                        storeData: allStoresWhen[i],
-                        distance: calculateDistanceToString(
-                            allStoresWhen[i].location,
-                            LatLng(
-                                locationData.latitude, locationData.longitude)),
-                        onTap: () => screenTransitionHero(
-                          context,
-                          SwiperPage(
-                            storeList: allStoresWhen,
-                            index: i,
+                      Padding(
+                        padding: EdgeInsets.only(right: safeAreaWidth * 0.05),
+                        child: OnStore(
+                          storeData: allStoresWhen[i],
+                          distance: calculateDistanceToString(
+                              allStoresWhen[i].location,
+                              LatLng(locationData.latitude,
+                                  locationData.longitude)),
+                          onTap: () => screenTransitionHero(
+                            context,
+                            SwiperPage(
+                              storeList: allStoresWhen,
+                              index: i,
+                            ),
                           ),
                         ),
                       ),
