@@ -182,3 +182,29 @@ Widget miniButtonWithCustomColor({
     ),
   );
 }
+
+Widget addButton(BuildContext context, {required void Function() onTap}) {
+  final safeAreaHeight = safeHeight(context);
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  return Material(
+    color: blueColor,
+    borderRadius: BorderRadius.circular(10),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        alignment: Alignment.center,
+        height: safeAreaHeight * 0.04,
+        width: safeAreaWidth * 0.2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(top: safeAreaHeight * 0.003),
+          child: nText("＋追加",
+              color: Colors.white, fontSize: safeAreaWidth / 28, bold: 700),
+        ),
+      ),
+    ),
+  );
+}

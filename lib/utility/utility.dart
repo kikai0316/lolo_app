@@ -15,7 +15,7 @@ import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/view/initiale.dart';
+import 'package:lolo_app/view/initiale_page.dart';
 import 'package:lolo_app/view/pages/location_request.dart';
 import 'package:lolo_app/view/not_data/not_birthday_page.dart';
 import 'package:lolo_app/view/not_data/not_img_page.dart';

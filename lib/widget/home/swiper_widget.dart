@@ -8,7 +8,7 @@ import 'package:lolo_app/constant/img.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/widget/store/store_post_widget.dart';
+import 'package:lolo_app/widget/store/store_home_widget.dart';
 
 class OnSwiper extends HookConsumerWidget {
   const OnSwiper({
@@ -383,7 +383,7 @@ class InformationContainerWidget extends HookConsumerWidget {
                             Padding(
                               key: ValueKey(i),
                               padding: EdgeInsets.all(safeAreaWidth * 0.02),
-                              child: eventWidget(context,
+                              child: storeEventWidget(context,
                                   data: storeData.eventList[i], onDelete: null),
                             )
                           }

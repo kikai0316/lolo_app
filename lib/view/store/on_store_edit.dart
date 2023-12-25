@@ -18,6 +18,7 @@ import 'package:lolo_app/view/account/on_edit_business_hour.dart';
 import 'package:lolo_app/view/account/on_edit_text_sheet.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/account/account_widget.dart';
+import 'package:lolo_app/widget/store/store_home_widget.dart';
 
 TextEditingController? textController;
 
@@ -76,54 +77,45 @@ class OnStoreSetting extends HookConsumerWidget {
 
     Future<void> dbUpdata() async {
       Map<String, dynamic> setData = {};
-      if (storeData.logo != editLogo.value) {
-        await upLoadMain(editLogo.value!, storeData.id);
-      }
       if (storeData.businessHours != editBusinessHour.value) {
         setData["business_hours"] = editBusinessHour.value;
       }
       if (storeData.searchWord != editSearchWord.value) {
         setData["search_word"] = editSearchWord.value;
       }
-      if (setData.isNotEmpty) {
-        final isDBUpData = await upDataStore(setData, storeData.id);
-        if (isDBUpData) {
-          final setStoreData = StoreData(
-              postImgList: storeData.postImgList,
-              logo: editLogo.value,
-              id: storeData.id,
-              name: editName.value,
-              address: editAddress.value,
-              businessHours: editBusinessHour.value,
-              searchWord: editSearchWord.value,
-              location: editLocation.value,
-              eventList: storeData.eventList);
-          final notifier = ref.read(userDataNotifierProvider.notifier);
-          await notifier.addStoreData(setStoreData);
-          if (context.mounted) {
-            isLoading.value = false;
-            Navigator.pop(context);
-            successSnackbar(
-              context,
-              "データ更新が正常に完了しました",
-            );
-          }
-        } else {
-          if (context.mounted) {
-            isLoading.value = false;
-            errorSnackbar(
-              context,
-              message: "システムエラーが発生しました。\n少し時間を置いてからもう一度お試しください。",
-            );
-          }
-        }
-      } else {
+
+      final isUpLoadMain = storeData.logo != editLogo.value
+          ? await upLoadMain(editLogo.value!, storeData.id)
+          : true;
+      final isDBUpData =
+          setData.isNotEmpty ? await upDataStore(setData, storeData.id) : true;
+      if (isDBUpData && isUpLoadMain) {
+        final setStoreData = StoreData(
+            postImgList: storeData.postImgList,
+            logo: editLogo.value,
+            id: storeData.id,
+            name: editName.value,
+            address: editAddress.value,
+            businessHours: editBusinessHour.value,
+            searchWord: editSearchWord.value,
+            location: editLocation.value,
+            eventList: storeData.eventList);
+        final notifier = ref.read(userDataNotifierProvider.notifier);
+        await notifier.addStoreData(setStoreData);
         if (context.mounted) {
           isLoading.value = false;
           Navigator.pop(context);
           successSnackbar(
             context,
             "データ更新が正常に完了しました",
+          );
+        }
+      } else {
+        if (context.mounted) {
+          isLoading.value = false;
+          errorSnackbar(
+            context,
+            message: "システムエラーが発生しました。\n少し時間を置いてからもう一度お試しください。",
           );
         }
       }
@@ -134,53 +126,15 @@ class OnStoreSetting extends HookConsumerWidget {
         Scaffold(
           extendBody: true,
           resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            title: nText(
-              "店舗アカウント編集",
-              color: Colors.white,
-              fontSize: safeAreaWidth / 20,
-              bold: 700,
-            ),
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
-                size: safeAreaWidth / 15,
-              ),
-              onPressed: () {
-                if (isDataCheck()) {
-                  Navigator.of(context).pop();
-                } else {
-                  showAlertDialog(
-                    context,
-                    title: "変更内容が保存されていません",
-                    subTitle: "このページを離れると、入力した内容は失われます。本当に離れますか？",
-                    buttonText: "OK",
-                    ontap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                  );
-                }
-              },
-            ),
-          ),
           backgroundColor: Colors.black,
+          appBar: storeEditAppBar(context, isDataCheck()),
           body: Stack(
             children: [
               SingleChildScrollView(
                 child: Center(
                   child: Column(
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: safeAreaHeight * 0.03,
-                        ),
-                        child:
-                            imgSetteingWidget(context, editLogo.value, getImg),
-                      ),
+                      imgSetteingWidget(context, editLogo.value, getImg),
                       Padding(
                         padding: EdgeInsets.only(top: safeAreaHeight * 0.02),
                         child: Container(
@@ -335,13 +289,41 @@ class OnStoreSetting extends HookConsumerWidget {
     String day = dateString.substring(6, 8);
     return '$year / $month / $day';
   }
-}
 
-final storeSettingTitle = [
-  "店舗名",
-  "住所",
-  "座標",
-  "営業時間",
-  "検索キーワード",
-  "店舗コード",
-];
+  PreferredSizeWidget storeEditAppBar(BuildContext context, bool isDataCheck) {
+    final safeAreaWidth = MediaQuery.of(context).size.width;
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      title: nText(
+        "編集",
+        color: Colors.white,
+        fontSize: safeAreaWidth / 20,
+        bold: 700,
+      ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios,
+          color: Colors.white,
+          size: safeAreaWidth / 15,
+        ),
+        onPressed: () {
+          if (isDataCheck) {
+            Navigator.of(context).pop();
+          } else {
+            showAlertDialog(
+              context,
+              title: "変更内容が保存されていません",
+              subTitle: "このページを離れると、入力した内容は失われます。本当に離れますか？",
+              buttonText: "OK",
+              ontap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}

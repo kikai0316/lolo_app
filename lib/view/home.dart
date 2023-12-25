@@ -12,6 +12,7 @@ import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/home/map_stores.dart';
 import 'package:lolo_app/view/home/swiper.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
+import 'package:lolo_app/widget/app_widget.dart';
 import 'package:lolo_app/widget/home/home_page_widget.dart';
 
 class HomePage2 extends HookConsumerWidget {
@@ -117,14 +118,9 @@ class HomePage2 extends HookConsumerWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(
-                  top: safeAreaHeight * 0.01, bottom: safeAreaHeight * 0.01),
-              child: Container(
-                height: 1,
-                width: safeAreaWidth,
-                color: Colors.grey.withOpacity(0.3),
-              ),
-            ),
+                padding: EdgeInsets.only(
+                    top: safeAreaHeight * 0.01, bottom: safeAreaHeight * 0.01),
+                child: line(context)),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

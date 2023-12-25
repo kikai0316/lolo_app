@@ -11,7 +11,10 @@ import 'package:lolo_app/widget/account/account_widget.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 
 class AccountPage extends HookConsumerWidget {
-  const AccountPage({super.key, required this.userData});
+  const AccountPage({
+    super.key,
+    required this.userData,
+  });
   final UserData userData;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,13 +23,6 @@ class AccountPage extends HookConsumerWidget {
     final settingTitleLength = userData.storeData != null
         ? settingTitle.length - 1
         : settingTitle.length;
-    // final notifierUserData = ref.watch(userDataNotifierProvider);
-    // final int settingTitleLength = notifierUserData.when(
-    //     data: (value) => value?.storeData != null
-    //         ? settingTitle.length - 1
-    //         : settingTitle.length,
-    //     error: (e, s) => settingTitle.length,
-    //     loading: () => settingTitle.length);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: appBar(context, "アカウント設定", true),
@@ -34,10 +30,7 @@ class AccountPage extends HookConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: safeAreaHeight * 0.02),
-                child: profileWidget(context, userData: userData),
-              ),
+              profileWidget(context, userData: userData),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(

@@ -22,8 +22,10 @@ import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/secure_storage_utility.dart';
 import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
+import 'package:lolo_app/view/initiale_page.dart';
 import 'package:lolo_app/view/login/login_sheet.dart';
-import 'package:lolo_app/view/login/store_information_sheet.dart';
+import 'package:lolo_app/view/login/store_setteing_sheet.dart';
+import 'package:lolo_app/view_model/page_index.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 import 'package:lolo_app/widget/login/login_widget.dart';
@@ -54,8 +56,11 @@ class StartPage extends HookConsumerWidget {
 
     Future<void> writeStoreData(StoreData storeData) async {
       final notifier = ref.read(userDataNotifierProvider.notifier);
+      final pageIndexNotifier = ref.read(pageIndexNotifierProvider.notifier);
+      await pageIndexNotifier.upData(3);
       await notifier.addStoreData(storeData);
       if (context.mounted) {
+        bottomNavigationKey = GlobalKey();
         isLoading.value = false;
         Navigator.pop(context);
         successSnackbar(

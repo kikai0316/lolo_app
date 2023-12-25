@@ -34,7 +34,7 @@ PreferredSizeWidget? appBar(
         : nText(
             title,
             color: Colors.white,
-            fontSize: safeAreaWidth / 17,
+            fontSize: safeAreaWidth / 19,
             bold: 700,
           ),
   );
@@ -94,5 +94,14 @@ Widget titleWithCircle(BuildContext context, String text) {
       ),
       nText(text, color: Colors.white, fontSize: safeAreaWidth / 25, bold: 700)
     ],
+  );
+}
+
+Widget line(BuildContext context) {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  return Container(
+    height: 1,
+    width: safeAreaWidth,
+    color: Colors.grey.withOpacity(0.3),
   );
 }
