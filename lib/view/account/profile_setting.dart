@@ -14,7 +14,7 @@ import 'package:lolo_app/utility/snack_bar_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/account/on_edit_text_sheet.dart';
 import 'package:lolo_app/view_model/user_data.dart';
-import 'package:lolo_app/widget/account_widget.dart';
+import 'package:lolo_app/widget/account/account_widget.dart';
 
 TextEditingController? textController;
 

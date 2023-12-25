@@ -15,8 +15,8 @@ import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/view/home.dart';
-import 'package:lolo_app/view/location_request.dart';
+import 'package:lolo_app/view/initiale_page.dart';
+import 'package:lolo_app/view/pages/location_request.dart';
 import 'package:lolo_app/view/not_data/not_birthday_page.dart';
 import 'package:lolo_app/view/not_data/not_img_page.dart';
 import 'package:lolo_app/view/not_data/not_name_page.dart';
@@ -110,25 +110,20 @@ Future getMobileImage({
   }
 }
 
-Future<Widget> nextScreenWithLocationCheck(
-  UserData userData,
-) async {
+Future<Widget> nextScreenWithLocationCheck() async {
   final serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     return const NotLocationPermissionPage();
   }
-
   final permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.deniedForever) {
     return const NotLocationPermissionPage();
   }
-
   if (permission == LocationPermission.denied) {
-    return RequestLocationsPage(userData: userData);
+    return const RequestLocationsPage();
   }
-
   final currentPosition = await Geolocator.getCurrentPosition();
-  return HomePage(myId: userData.id, locationData: currentPosition);
+  return InitialPage(locationData: currentPosition);
 }
 
 void showAlertDialog(
@@ -354,4 +349,10 @@ double calculateDistance(LatLng loc1, LatLng loc2) {
           (1 - cos((loc2.longitude - loc1.longitude) * p)) /
           2;
   return 12742 * asin(sqrt(a));
+}
+
+List<StoreData> sortByDistance(List<StoreData> stores, LatLng currentLocation) {
+  stores.sort((a, b) => calculateDistance(a.location, currentLocation)
+      .compareTo(calculateDistance(b.location, currentLocation)));
+  return stores;
 }
