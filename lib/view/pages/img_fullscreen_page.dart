@@ -18,7 +18,7 @@ class ImgFullScreenPage extends HookConsumerWidget {
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final top = useState<double>(0);
     final left = useState<double>(0);
-    final backgroundOpacity = useState<double>(1);
+    final backgroundOpacity = useState<double>(0.9);
 
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(backgroundOpacity.value),
@@ -84,7 +84,14 @@ class ImgFullScreenPage extends HookConsumerWidget {
           onTap: () => onCancel(),
           child: Icon(
             Icons.close,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white,
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 10,
+                spreadRadius: 1.0,
+              )
+            ],
             size: safeAreaWidth / 9,
           ),
         ),

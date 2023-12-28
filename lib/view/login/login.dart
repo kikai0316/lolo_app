@@ -108,7 +108,7 @@ class StartPage extends HookConsumerWidget {
                         final isLogoUpLoading = await upLoadMain(value.img, id);
                         if (isDataUpLoading && isLogoUpLoading) {
                           await writeStoreData(StoreData(
-                              postImgList: [],
+                              storyList: [],
                               logo: value.img,
                               id: id,
                               searchWord: value.searchWord,

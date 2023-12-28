@@ -8,6 +8,7 @@ import 'package:lolo_app/view/account.dart';
 import 'package:lolo_app/view/home.dart';
 import 'package:lolo_app/view/search.dart';
 import 'package:lolo_app/view/store.dart';
+import 'package:lolo_app/view_model/loading.dart';
 import 'package:lolo_app/view_model/page_index.dart';
 import 'package:lolo_app/view_model/user_data.dart';
 
@@ -22,64 +23,77 @@ class InitialPage extends HookConsumerWidget {
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final userDataNotifier = ref.watch(userDataNotifierProvider);
     final pageIndexNotifier = ref.watch(pageIndexNotifierProvider);
+    final loadingNotifier = ref.watch(loadingNotifierProvider);
     final int? pageIndexNotifierWhen = pageIndexNotifier.when(
         data: (value) => value, error: (e, s) => 0, loading: () => null);
     if (pageIndexNotifierWhen != null) {
       return userDataNotifier.when(
           data: (value) => value != null
-              ? Scaffold(
-                  backgroundColor: Colors.black,
-                  body: [
-                    HomePage2(
-                      locationData: locationData,
-                      userData: value,
-                    ),
-                    SearchPage(
-                      locationData: locationData,
-                    ),
-                    AccountPage(
-                      userData: value,
-                    ),
-                    value.storeData != null
-                        ? StorePage(storeData: value.storeData!)
-                        : const SizedBox()
-                  ][pageIndexNotifierWhen],
-                  bottomNavigationBar: CurvedNavigationBar(
-                    animationDuration: const Duration(milliseconds: 200),
-                    backgroundColor: Colors.transparent,
-                    buttonBackgroundColor: blueColor2,
-                    color: blackColor,
-                    index: pageIndexNotifierWhen,
-                    key: bottomNavigationKey,
-                    items: <Widget>[
-                      for (int i = 0; i < 3; i++) ...{
-                        bottomNavigationIcon(
-                          context,
-                          pageIndex: i,
+              ? Stack(
+                  children: [
+                    Scaffold(
+                      backgroundColor: Colors.black,
+                      body: [
+                        HomePage2(
+                          locationData: locationData,
+                          userData: value,
                         ),
-                      },
-                      if (value.storeData != null)
-                        SizedBox(
-                          height: safeAreaWidth * 0.08,
-                          width: safeAreaWidth * 0.08,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Colors.grey.withOpacity(0.5)),
-                              image: DecorationImage(
-                                  image: MemoryImage(value.storeData!.logo!),
-                                  fit: BoxFit.cover),
+                        SearchPage(
+                          locationData: locationData,
+                        ),
+                        AccountPage(
+                          userData: value,
+                        ),
+                        value.storeData != null
+                            ? StorePage(storeData: value.storeData!)
+                            : const SizedBox()
+                      ][pageIndexNotifierWhen],
+                      bottomNavigationBar: CurvedNavigationBar(
+                        animationDuration: const Duration(milliseconds: 200),
+                        backgroundColor: Colors.transparent,
+                        buttonBackgroundColor: blueColor2,
+                        color: blackColor,
+                        index: pageIndexNotifierWhen,
+                        key: bottomNavigationKey,
+                        items: <Widget>[
+                          for (int i = 0; i < 3; i++) ...{
+                            bottomNavigationIcon(
+                              context,
+                              pageIndex: i,
                             ),
-                          ),
-                        ),
-                    ],
-                    onTap: (index) {
-                      final notifier =
-                          ref.read(pageIndexNotifierProvider.notifier);
-                      notifier.upData(index);
-                    },
-                  ),
+                          },
+                          if (value.storeData != null)
+                            SizedBox(
+                              height: safeAreaWidth * 0.08,
+                              width: safeAreaWidth * 0.08,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.grey.withOpacity(0.5)),
+                                  image: DecorationImage(
+                                      image:
+                                          MemoryImage(value.storeData!.logo!),
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                        ],
+                        onTap: (index) {
+                          final notifier =
+                              ref.read(pageIndexNotifierProvider.notifier);
+                          notifier.upData(index);
+                        },
+                      ),
+                    ),
+                    loadinPage(
+                        context: context,
+                        isLoading: loadingNotifier.when(
+                            data: (value) => value,
+                            error: (e, s) => false,
+                            loading: () => false),
+                        text: null)
+                  ],
                 )
               : const SizedBox(),
           error: (e, s) => const SizedBox(),

@@ -51,7 +51,7 @@ class OnStore extends HookConsumerWidget {
                   width: safeAreaWidth * 0.2,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: storeData.postImgList.isEmpty
+                    gradient: storeData.storyList.isEmpty
                         ? null
                         : const LinearGradient(
                             begin: FractionalOffset.topRight,
@@ -62,7 +62,7 @@ class OnStore extends HookConsumerWidget {
                               Color.fromARGB(255, 4, 200, 255),
                             ],
                           ),
-                    color: storeData.postImgList.isEmpty
+                    color: storeData.storyList.isEmpty
                         ? Colors.grey.withOpacity(0.5)
                         : null,
                   ),

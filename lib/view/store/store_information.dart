@@ -115,33 +115,43 @@ class StoreInformation extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                        settingWidget(
-                            isOnlyBottomRadius: true,
-                            isOnlyTopRadius: true,
-                            isRedTitle: true,
-                            trailing: const SizedBox(),
+                        Material(
+                          color: blackColor,
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
                             onTap: () => showAlertDialog(
-                                  context,
-                                  title: "ログアウトしますか？",
-                                  subTitle: "ログアウトしても店舗アカウントは削除されません。",
-                                  buttonText: "ログアウト",
-                                  ontap: () async {
-                                    FirebaseAuth.instance.signOut();
-                                    final pageIndexNotifier = ref.read(
-                                        pageIndexNotifierProvider.notifier);
-                                    await pageIndexNotifier.upData(2);
-                                    final notifier = ref.read(
-                                        userDataNotifierProvider.notifier);
-                                    await notifier.addStoreData(null);
-                                    if (context.mounted) {
-                                      bottomNavigationKey = GlobalKey();
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                ),
-                            context: context,
-                            iconText: "店舗アカウントログアウト"),
+                              context,
+                              title: "ログアウトしますか？",
+                              subTitle: "ログアウトしても店舗アカウントは削除されません。",
+                              buttonText: "ログアウト",
+                              ontap: () async {
+                                FirebaseAuth.instance.signOut();
+                                final pageIndexNotifier = ref
+                                    .read(pageIndexNotifierProvider.notifier);
+                                await pageIndexNotifier.upData(2);
+                                final notifier =
+                                    ref.read(userDataNotifierProvider.notifier);
+                                await notifier.addStoreData(null);
+                                if (context.mounted) {
+                                  bottomNavigationKey = GlobalKey();
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: safeAreaHeight * 0.08,
+                              child: nText(
+                                "店舗アカウントログアウト",
+                                color: Colors.red,
+                                fontSize: safeAreaWidth / 26,
+                                bold: 700,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

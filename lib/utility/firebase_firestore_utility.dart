@@ -44,7 +44,7 @@ Future<StoreData?> toStoreData(Map<String, dynamic> dbData, String id) async {
     List<String> searchWordList =
         List<String>.from(dbData['search_word'] ?? []);
     return StoreData(
-        postImgList: dbGetData!.postImgList,
+        storyList: dbGetData!.storyList,
         logo: dbGetData.logo,
         id: id,
         name: dbData["name"] ?? "",

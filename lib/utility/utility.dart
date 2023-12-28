@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -355,4 +356,27 @@ List<StoreData> sortByDistance(List<StoreData> stores, LatLng currentLocation) {
   stores.sort((a, b) => calculateDistance(a.location, currentLocation)
       .compareTo(calculateDistance(b.location, currentLocation)));
   return stores;
+}
+
+List<StoryType> sortStoriesByOldestDate(List<StoryType> stories) {
+  List<StoryType> sortedStories = List<StoryType>.from(stories)
+    ..sort((a, b) => a.date.compareTo(b.date));
+  return sortedStories;
+}
+
+Future<void> showBottomMenu(BuildContext context,
+    {required void Function() onDelete}) async {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  await showAdaptiveActionSheet(
+      context: context,
+      androidBorderRadius: 30,
+      actions: <BottomSheetAction>[
+        BottomSheetAction(
+            title: nText("投稿削除",
+                color: Colors.red, fontSize: safeAreaWidth / 25, bold: 700),
+            onPressed: (context) => onDelete()),
+      ],
+      cancelAction: CancelAction(
+          title: nText("キャンセル",
+              color: blueColor, fontSize: safeAreaWidth / 25, bold: 700)));
 }

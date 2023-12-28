@@ -95,7 +95,7 @@ class AllStoresNotifier extends _$AllStoresNotifier {
         change.id,
       );
       return StoreData(
-        postImgList: storageDataGet?.postImgList ?? [],
+        storyList: storageDataGet?.storyList ?? [],
         logo: storageDataGet?.logo,
         eventList: storageDataGet?.eventList ?? [],
         id: change.id,

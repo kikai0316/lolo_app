@@ -37,10 +37,10 @@ class OnSwiper extends HookConsumerWidget {
               height: safeAreaHeight * 1,
               width: double.infinity,
               decoration: BoxDecoration(
-                image: storeData.postImgList.isNotEmpty
+                image: storeData.storyList.isNotEmpty
                     ? DecorationImage(
                         image: MemoryImage(
-                            storeData.postImgList[imgIndex.value].img),
+                            storeData.storyList[imgIndex.value].img),
                         fit: BoxFit.cover,
                       )
                     : null,
@@ -48,13 +48,13 @@ class OnSwiper extends HookConsumerWidget {
               ),
               child: Stack(
                 children: [
-                  if (storeData.postImgList.isEmpty) ...{
+                  if (storeData.storyList.isEmpty) ...{
                     notPostWidget(context, storeData: storeData)
                   },
                   tapEventWidget(
                     context,
                     nextOnTap: () {
-                      if (imgIndex.value < storeData.postImgList.length - 1) {
+                      if (imgIndex.value < storeData.storyList.length - 1) {
                         imgIndex.value++;
                       } else {
                         onNext();
@@ -188,7 +188,7 @@ Widget appBarWidget(BuildContext context,
         children: [
           Row(
             children: [
-              for (int i = 0; i < storeData.postImgList.length; i++) ...{
+              for (int i = 0; i < storeData.storyList.length; i++) ...{
                 Expanded(
                   child: Opacity(
                     opacity: i == imgIndex ? 1 : 0.4,
@@ -201,7 +201,7 @@ Widget appBarWidget(BuildContext context,
                     ),
                   ),
                 ),
-                if (i < storeData.postImgList.length)
+                if (i < storeData.storyList.length)
                   SizedBox(width: safeAreaWidth * 0.01),
               },
             ],
@@ -253,10 +253,9 @@ Widget appBarWidget(BuildContext context,
                         Padding(
                           padding: EdgeInsets.only(left: safeAreaWidth * 0.02),
                           child: nTextWithShadow(
-                              storeData.postImgList.isEmpty
+                              storeData.storyList.isEmpty
                                   ? ""
-                                  : timeAgo(
-                                      storeData.postImgList[imgIndex].date),
+                                  : timeAgo(storeData.storyList[imgIndex].date),
                               color: Colors.white,
                               opacity: 0.3,
                               fontSize: safeAreaWidth / 30,

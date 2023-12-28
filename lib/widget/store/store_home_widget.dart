@@ -11,7 +11,6 @@ import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/store/event_fullscreen_sheet.dart';
 import 'package:lolo_app/view/pages/img_fullscreen_page.dart';
 import 'package:lolo_app/view/store/store_information.dart';
-import 'package:lolo_app/widget/app_widget.dart';
 
 final List<String> storeSettingTitle = [
   "店舗名",
@@ -21,9 +20,11 @@ final List<String> storeSettingTitle = [
   "検索キーワード",
   "店舗コード",
 ];
-PreferredSizeWidget? storeAppBar(BuildContext context, StoreData storeData) {
+PreferredSizeWidget? storeAppBar(
+    BuildContext context, StoreData storeData, int? crowdingSelectNumber) {
   final safeAreaHeight = safeHeight(context);
   final safeAreaWidth = MediaQuery.of(context).size.width;
+
   return PreferredSize(
     preferredSize: Size.fromHeight(safeAreaHeight * 0.08),
     child: AppBar(
@@ -55,6 +56,7 @@ PreferredSizeWidget? storeAppBar(BuildContext context, StoreData storeData) {
               Padding(
                 padding: EdgeInsets.only(right: safeAreaWidth * 0.03),
                 child: Container(
+                  alignment: const Alignment(1.1, 1.1),
                   height: safeAreaWidth * 0.12,
                   width: safeAreaWidth * 0.12,
                   decoration: BoxDecoration(
@@ -66,6 +68,19 @@ PreferredSizeWidget? storeAppBar(BuildContext context, StoreData storeData) {
                     border: Border.all(color: Colors.grey.withOpacity(0.1)),
                     shape: BoxShape.circle,
                   ),
+                  child: Container(
+                      height: safeAreaWidth * 0.045,
+                      width: safeAreaWidth * 0.045,
+                      decoration: BoxDecoration(
+                        color: crowdingSelectNumber != null
+                            ? [
+                                greenColor,
+                                yellowColor,
+                                redColor
+                              ][crowdingSelectNumber]
+                            : null,
+                        shape: BoxShape.circle,
+                      )),
                 ),
               ),
               Expanded(
@@ -83,78 +98,81 @@ PreferredSizeWidget? storeAppBar(BuildContext context, StoreData storeData) {
 }
 
 Widget crowdingWidget(BuildContext context,
-    {required void Function(int) onTap, required int selectNumber}) {
+    {required void Function(int) onTap, required int? selectNumber}) {
   final safeAreaWidth = MediaQuery.of(context).size.width;
   final safeAreaHeight = safeHeight(context);
   final colorList = [greenColor, yellowColor, redColor];
-  return Container(
-    height: safeAreaHeight * 0.06,
-    width: safeAreaWidth,
-    decoration: BoxDecoration(
-      color: blackColor,
-      borderRadius: BorderRadius.circular(15),
-    ),
-    child: Row(
-      children: [
-        for (int i = 0; i < 3; i++) ...{
-          Expanded(
-              child: GestureDetector(
-            onTap: i == selectNumber ? null : () => onTap(i),
-            child: Opacity(
-              opacity: i == selectNumber ? 1 : 0.3,
-              child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: selectNumber == i
-                        ? Colors.white.withOpacity(0.3)
-                        : null,
-                    borderRadius: BorderRadius.only(
-                      topLeft: i == 0 ? const Radius.circular(15) : Radius.zero,
-                      bottomLeft:
-                          i == 0 ? const Radius.circular(15) : Radius.zero,
-                      bottomRight:
-                          i == 2 ? const Radius.circular(15) : Radius.zero,
-                      topRight:
-                          i == 2 ? const Radius.circular(15) : Radius.zero,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: safeAreaWidth * 0.03,
-                        width: safeAreaWidth * 0.03,
-                        decoration: BoxDecoration(
-                          color: colorList[i],
-                          boxShadow: [
-                            BoxShadow(
-                              color: colorList[i].withOpacity(0.6),
-                              blurRadius: 10,
-                              spreadRadius: 1.0,
-                            )
-                          ],
-                          shape: BoxShape.circle,
-                        ),
+  return Expanded(
+    child: Container(
+      height: safeAreaHeight * 0.05,
+      decoration: BoxDecoration(
+        color: blackColor,
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: Row(
+        children: [
+          for (int i = 0; i < 3; i++) ...{
+            Expanded(
+                child: GestureDetector(
+              onTap: i == selectNumber ? null : () => onTap(i),
+              child: Opacity(
+                opacity: i == selectNumber ? 1 : 0.3,
+                child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: selectNumber == i
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.only(
+                        topLeft:
+                            i == 0 ? const Radius.circular(50) : Radius.zero,
+                        bottomLeft:
+                            i == 0 ? const Radius.circular(50) : Radius.zero,
+                        bottomRight:
+                            i == 2 ? const Radius.circular(50) : Radius.zero,
+                        topRight:
+                            i == 2 ? const Radius.circular(50) : Radius.zero,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: safeAreaHeight * 0.01),
-                        child: nText(["余裕あり", "やや混雑", "大混雑"][i],
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: safeAreaWidth / 30,
-                            bold: 700),
-                      )
-                    ],
-                  )),
-            ),
-          )),
-          if (i != 2)
-            Container(
-              height: safeAreaHeight * 0.06,
-              width: 1,
-              color: Colors.grey.withOpacity(0.5),
-            )
-        }
-      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: safeAreaWidth * 0.03,
+                          width: safeAreaWidth * 0.03,
+                          decoration: BoxDecoration(
+                            color: colorList[i],
+                            boxShadow: [
+                              BoxShadow(
+                                color: colorList[i].withOpacity(0.6),
+                                blurRadius: 10,
+                                spreadRadius: 1.0,
+                              )
+                            ],
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              EdgeInsets.only(left: safeAreaHeight * 0.005),
+                          child: nText(["余裕あり", "やや混雑", "大混雑"][i],
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: safeAreaWidth / 40,
+                              bold: 700),
+                        )
+                      ],
+                    )),
+              ),
+            )),
+            if (i != 2)
+              Container(
+                height: safeAreaHeight * 0.06,
+                width: 1,
+                color: Colors.grey.withOpacity(0.5),
+              )
+          }
+        ],
+      ),
     ),
   );
 }
@@ -193,64 +211,67 @@ Widget storeNotPost(BuildContext context, IconData? icon, String message) {
   );
 }
 
-Widget storeStoryWidget(BuildContext context,
-    {required StoryImgType data, required void Function() onDelete}) {
+Widget storeStoryWidget(
+  BuildContext context, {
+  required StoryType data,
+  required void Function() onDelete,
+}) {
   final safeAreaWidth = MediaQuery.of(context).size.width;
   final safeAreaHeight = safeHeight(context);
-  String ofTime(
-    DateTime date,
-  ) {
-    final DateFormat formatter = DateFormat('y/M/d', 'ja_JP');
-    return formatter.format(date);
-  }
 
-  return AspectRatio(
-      aspectRatio: 9 / 16,
-      child: GestureDetector(
-        onTap: () {
-          OverlayEntry? overlayEntry;
-          overlayEntry = OverlayEntry(
-            builder: (context) => ImgFullScreenPage(
-              img: data.img,
-              onCancel: () => overlayEntry?.remove(),
-            ),
-          );
-          Overlay.of(context).insert(overlayEntry);
-        },
-        child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(0.5)),
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: MemoryImage(data.img), fit: BoxFit.cover),
-            ),
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomRight,
+  return Column(
+    children: [
+      Padding(
+        padding: EdgeInsets.only(bottom: safeAreaHeight * 0.005),
+        child: nText(timeAgo(data.date),
+            color: Colors.white, fontSize: safeAreaWidth / 35, bold: 700),
+      ),
+      SizedBox(
+        height: safeAreaHeight * 0.21,
+        child: AspectRatio(
+            aspectRatio: 9 / 16,
+            child: GestureDetector(
+              onTap: () {
+                OverlayEntry? overlayEntry;
+                overlayEntry = OverlayEntry(
+                  builder: (context) => ImgFullScreenPage(
+                    img: data.img,
+                    onCancel: () => overlayEntry?.remove(),
+                  ),
+                );
+                Overlay.of(context).insert(overlayEntry);
+              },
+              child: Container(
+                alignment: Alignment.topRight,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: MemoryImage(data.img), fit: BoxFit.cover),
+                ),
+                child: GestureDetector(
+                  onTap: onDelete,
                   child: Padding(
-                    padding: EdgeInsets.all(safeAreaWidth * 0.015),
-                    child: deleteIconWithCircle(
-                        size: safeAreaHeight * 0.04,
-                        onDelete: onDelete,
-                        padding: 0),
+                    padding: EdgeInsets.all(safeAreaWidth * 0.005),
+                    child: Icon(
+                      Icons.more_horiz,
+                      color: Colors.white,
+                      shadows: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 1.0,
+                        )
+                      ],
+                      size: safeAreaWidth / 18,
+                    ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.all(safeAreaWidth * 0.015),
-                    child: nTextWithShadow(ofTime(data.date),
-                        opacity: 1,
-                        color: Colors.white,
-                        fontSize: safeAreaWidth / 35,
-                        bold: 700),
-                  ),
-                ),
-              ],
+              ),
             )),
-      ));
+      ),
+    ],
+  );
 }
 
 Widget storeEventWidget(BuildContext context,
@@ -260,14 +281,7 @@ Widget storeEventWidget(BuildContext context,
   String toEvelntDateOfTime(
     DateTime date,
   ) {
-    final DateFormat formatter = DateFormat('M/d', 'ja_JP');
-    return formatter.format(date);
-  }
-
-  String toEvelntDateOfWeek(
-    DateTime date,
-  ) {
-    final DateFormat formatter = DateFormat('( E )', 'ja_JP');
+    final DateFormat formatter = DateFormat('M/d ( E )', 'ja_JP');
     return formatter.format(date);
   }
 
@@ -275,6 +289,21 @@ Widget storeEventWidget(BuildContext context,
     width: safeAreaWidth * 0.4,
     child: Column(
       children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: safeAreaHeight * 0.005),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              nText("開催日：",
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: safeAreaWidth / 40,
+                  bold: 700),
+              nText(toEvelntDateOfTime(data.date),
+                  color: Colors.white, fontSize: safeAreaWidth / 27, bold: 700),
+            ],
+          ),
+        ),
         AspectRatio(
             aspectRatio: 16 / 9,
             child: GestureDetector(
@@ -282,51 +311,33 @@ Widget storeEventWidget(BuildContext context,
                   page: EventFullScreenSheet(event: data),
                   isBackgroundColor: false),
               child: Container(
-                  alignment: Alignment.bottomRight,
+                  alignment: Alignment.topRight,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.withOpacity(0.5)),
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
                         image: MemoryImage(data.img), fit: BoxFit.cover),
                   ),
-                  child: Stack(
-                    children: [
-                      if (onDelete != null) ...{
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: EdgeInsets.all(safeAreaWidth * 0.015),
-                            child: deleteIconWithCircle(
-                                size: safeAreaHeight * 0.04,
-                                onDelete: onDelete,
-                                padding: 0),
+                  child: onDelete != null
+                      ? Padding(
+                          padding: EdgeInsets.all(safeAreaWidth * 0.001),
+                          child: GestureDetector(
+                            onTap: onDelete,
+                            child: Icon(
+                              Icons.more_horiz,
+                              color: Colors.white,
+                              size: safeAreaWidth / 15,
+                              shadows: const [
+                                BoxShadow(
+                                  color: Colors.black,
+                                  blurRadius: 10,
+                                  spreadRadius: 10.0,
+                                )
+                              ],
+                            ),
                           ),
                         )
-                      },
-                      Align(
-                        alignment: const Alignment(1, -1.6),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Row(
-                            children: [
-                              nTextWithShadow(toEvelntDateOfTime(data.date),
-                                  color: Colors.white,
-                                  fontSize: safeAreaWidth / 18,
-                                  opacity: 1,
-                                  bold: 700),
-                              nTextWithShadow(toEvelntDateOfWeek(data.date),
-                                  color: Colors.white,
-                                  fontSize: safeAreaWidth / 30,
-                                  opacity: 1,
-                                  bold: 700),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  )),
+                      : null),
             )),
         Container(
             alignment: Alignment.topCenter,

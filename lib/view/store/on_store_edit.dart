@@ -91,7 +91,7 @@ class OnStoreSetting extends HookConsumerWidget {
           setData.isNotEmpty ? await upDataStore(setData, storeData.id) : true;
       if (isDBUpData && isUpLoadMain) {
         final setStoreData = StoreData(
-            postImgList: storeData.postImgList,
+            storyList: storeData.storyList,
             logo: editLogo.value,
             id: storeData.id,
             name: editName.value,
