@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$StoreData {
-  List<StoryImgType> get postImgList => throw _privateConstructorUsedError;
+  List<StoryType> get storyList => throw _privateConstructorUsedError;
   Uint8List? get logo => throw _privateConstructorUsedError;
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -37,7 +37,7 @@ abstract class $StoreDataCopyWith<$Res> {
       _$StoreDataCopyWithImpl<$Res, StoreData>;
   @useResult
   $Res call(
-      {List<StoryImgType> postImgList,
+      {List<StoryType> storyList,
       Uint8List? logo,
       String id,
       String name,
@@ -61,7 +61,7 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postImgList = null,
+    Object? storyList = null,
     Object? logo = freezed,
     Object? id = null,
     Object? name = null,
@@ -72,10 +72,10 @@ class _$StoreDataCopyWithImpl<$Res, $Val extends StoreData>
     Object? location = null,
   }) {
     return _then(_value.copyWith(
-      postImgList: null == postImgList
-          ? _value.postImgList
-          : postImgList // ignore: cast_nullable_to_non_nullable
-              as List<StoryImgType>,
+      storyList: null == storyList
+          ? _value.storyList
+          : storyList // ignore: cast_nullable_to_non_nullable
+              as List<StoryType>,
       logo: freezed == logo
           ? _value.logo
           : logo // ignore: cast_nullable_to_non_nullable
@@ -121,7 +121,7 @@ abstract class _$$StoreDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<StoryImgType> postImgList,
+      {List<StoryType> storyList,
       Uint8List? logo,
       String id,
       String name,
@@ -143,7 +143,7 @@ class __$$StoreDataImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? postImgList = null,
+    Object? storyList = null,
     Object? logo = freezed,
     Object? id = null,
     Object? name = null,
@@ -154,10 +154,10 @@ class __$$StoreDataImplCopyWithImpl<$Res>
     Object? location = null,
   }) {
     return _then(_$StoreDataImpl(
-      postImgList: null == postImgList
-          ? _value._postImgList
-          : postImgList // ignore: cast_nullable_to_non_nullable
-              as List<StoryImgType>,
+      storyList: null == storyList
+          ? _value._storyList
+          : storyList // ignore: cast_nullable_to_non_nullable
+              as List<StoryType>,
       logo: freezed == logo
           ? _value.logo
           : logo // ignore: cast_nullable_to_non_nullable
@@ -198,7 +198,7 @@ class __$$StoreDataImplCopyWithImpl<$Res>
 
 class _$StoreDataImpl implements _StoreData {
   const _$StoreDataImpl(
-      {required final List<StoryImgType> postImgList,
+      {required final List<StoryType> storyList,
       required this.logo,
       required this.id,
       required this.name,
@@ -207,16 +207,16 @@ class _$StoreDataImpl implements _StoreData {
       required final List<String> searchWord,
       required final List<EventType> eventList,
       required this.location})
-      : _postImgList = postImgList,
+      : _storyList = storyList,
         _searchWord = searchWord,
         _eventList = eventList;
 
-  final List<StoryImgType> _postImgList;
+  final List<StoryType> _storyList;
   @override
-  List<StoryImgType> get postImgList {
-    if (_postImgList is EqualUnmodifiableListView) return _postImgList;
+  List<StoryType> get storyList {
+    if (_storyList is EqualUnmodifiableListView) return _storyList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_postImgList);
+    return EqualUnmodifiableListView(_storyList);
   }
 
   @override
@@ -250,7 +250,7 @@ class _$StoreDataImpl implements _StoreData {
 
   @override
   String toString() {
-    return 'StoreData(postImgList: $postImgList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, searchWord: $searchWord, eventList: $eventList, location: $location)';
+    return 'StoreData(storyList: $storyList, logo: $logo, id: $id, name: $name, address: $address, businessHours: $businessHours, searchWord: $searchWord, eventList: $eventList, location: $location)';
   }
 
   @override
@@ -259,7 +259,7 @@ class _$StoreDataImpl implements _StoreData {
         (other.runtimeType == runtimeType &&
             other is _$StoreDataImpl &&
             const DeepCollectionEquality()
-                .equals(other._postImgList, _postImgList) &&
+                .equals(other._storyList, _storyList) &&
             const DeepCollectionEquality().equals(other.logo, logo) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
@@ -277,7 +277,7 @@ class _$StoreDataImpl implements _StoreData {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(_postImgList),
+      const DeepCollectionEquality().hash(_storyList),
       const DeepCollectionEquality().hash(logo),
       id,
       name,
@@ -296,7 +296,7 @@ class _$StoreDataImpl implements _StoreData {
 
 abstract class _StoreData implements StoreData {
   const factory _StoreData(
-      {required final List<StoryImgType> postImgList,
+      {required final List<StoryType> storyList,
       required final Uint8List? logo,
       required final String id,
       required final String name,
@@ -307,7 +307,7 @@ abstract class _StoreData implements StoreData {
       required final LatLng location}) = _$StoreDataImpl;
 
   @override
-  List<StoryImgType> get postImgList;
+  List<StoryType> get storyList;
   @override
   Uint8List? get logo;
   @override

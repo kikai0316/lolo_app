@@ -41,9 +41,7 @@ class NotNamePage extends HookConsumerWidget {
           // ignore: use_build_context_synchronously
           screenTransitionNormal(context, nextScreenWhisUserData);
         } else {
-          final nextScreenWithLocation = await nextScreenWithLocationCheck(
-            userData,
-          );
+          final nextScreenWithLocation = await nextScreenWithLocationCheck();
           if (context.mounted) {
             screenTransitionNormal(context, nextScreenWithLocation);
           }

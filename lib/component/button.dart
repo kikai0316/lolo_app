@@ -182,3 +182,48 @@ Widget miniButtonWithCustomColor({
     ),
   );
 }
+
+Widget addButton(BuildContext context, {required void Function() onTap}) {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  return Material(
+    color: blueColor,
+    borderRadius: BorderRadius.circular(10),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        alignment: Alignment.center,
+        // height: safeAreaHeight * 0.04,
+        // width: safeAreaWidth * 0.3,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(safeAreaWidth * 0.02),
+          child: nText("＋アップロード",
+              color: Colors.white, fontSize: safeAreaWidth / 35, bold: 700),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget textButton(
+    {required void Function() onTap,
+    required String text,
+    required double size}) {
+  return TextButton(
+    onPressed: onTap,
+    style: ButtonStyle(
+      overlayColor: MaterialStateProperty.resolveWith<Color?>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.pressed)) {
+            return Colors.grey.withOpacity(0.1);
+          }
+          return null;
+        },
+      ),
+    ),
+    child: nText(text, color: Colors.white, fontSize: size, bold: 700),
+  );
+}

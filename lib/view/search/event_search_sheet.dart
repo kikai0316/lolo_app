@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lolo_app/component/button.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/utility/utility.dart';
@@ -32,22 +33,10 @@ class EventSearchSheetWidget extends HookConsumerWidget {
             children: [
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.pressed)) {
-                          return Colors.grey.withOpacity(0.1);
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  child: nText("とじる",
-                      color: Colors.white,
-                      fontSize: safeAreaWidth / 25,
-                      bold: 600),
+                child: textButton(
+                  text: "とじる",
+                  size: safeAreaWidth / 25,
+                  onTap: () => Navigator.pop(context),
                 ),
               ),
               Padding(
