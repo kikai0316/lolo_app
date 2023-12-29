@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lolo_app/constant/color.dart';
@@ -339,26 +337,6 @@ Widget storeEventWidget(BuildContext context,
                         )
                       : null),
             )),
-        Container(
-            alignment: Alignment.topCenter,
-            width: safeAreaWidth * 1,
-            child: Padding(
-              padding: EdgeInsets.only(top: safeAreaHeight * 0.01),
-              child: Text(
-                data.title,
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                style: TextStyle(
-                  height: 1,
-                  decoration: TextDecoration.none,
-                  fontFamily: "Normal",
-                  fontVariations: const [FontVariation("wght", 700)],
-                  color: Colors.white,
-                  fontSize: safeAreaWidth / 35,
-                ),
-              ),
-            ))
       ],
     ),
   );

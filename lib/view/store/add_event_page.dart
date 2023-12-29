@@ -125,12 +125,12 @@ class OnAddEventPage extends HookConsumerWidget {
                     eventDate.value != null &&
                     controller.text.isNotEmpty) {
                   Navigator.pop(context);
-                  onAdd(EventType(
-                    id: generateRandomString(),
-                    img: eventImg.value!,
-                    date: eventDate.value!,
-                    title: controller.text,
-                  ));
+                  // onAdd(EventType(//後
+                  //   id: generateRandomString(),
+                  //   img: eventImg.value!,
+                  //   date: eventDate.value!,
+                  //   title: controller.text,
+                  // ));
                 } else {
                   errorSnackbar(context,
                       message:

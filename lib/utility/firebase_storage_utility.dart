@@ -34,10 +34,10 @@ Future<StoreData?> storeDataGet(String id) async {
           eventList.add(EventType(
             img: getImg,
             id: parts[0],
+            category: parts[1],
             date: DateTime.parse(
               parts[2],
             ),
-            title: parts[1],
           ));
         }
       }
@@ -131,7 +131,7 @@ Future<bool> upLoadEvent(
       File file = File(imagePath);
       await file.writeAsBytes(item.img);
       await FirebaseStorage.instance
-          .ref("store/$id/event/${item.id}@${item.title}@${item.date}")
+          .ref("store/$id/event/${item.id}@${item.category}@${item.date}") //後
           .putFile(file);
     }
     return true;

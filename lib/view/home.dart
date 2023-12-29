@@ -11,6 +11,7 @@ import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:lolo_app/view/home/map_stores.dart';
 import 'package:lolo_app/view/home/swiper.dart';
+import 'package:lolo_app/view/search.dart';
 import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/widget/app_widget.dart';
 import 'package:lolo_app/widget/home/home_page_widget.dart';
@@ -66,20 +67,38 @@ class HomePage2 extends HookConsumerWidget {
                       color: Colors.white,
                       fontSize: safeAreaWidth / 20,
                       bold: 700),
-                  GestureDetector(
-                    onTap: () => screenTransition(
-                        context,
-                        MapStoresPage(
-                            locationData: locationData,
-                            myId: userData.id,
-                            allStores: allStoresWhen)),
-                    child: SizedBox(
-                        height: safeAreaWidth * 0.1,
-                        width: safeAreaWidth * 0.1,
-                        child: imgIcon(
-                            file: "assets/img/map_icon.png",
-                            padding: safeAreaWidth * 0.01)),
-                  )
+                  Row(
+                    children: [
+                      for (int i = 0; i < 2; i++) ...{
+                        Padding(
+                          padding: EdgeInsets.only(left: safeAreaWidth * 0.03),
+                          child: GestureDetector(
+                            onTap: [
+                              () => screenTransition(
+                                  context,
+                                  SearchPage(
+                                    locationData: locationData,
+                                  )),
+                              () => screenTransitionToTop(
+                                  context,
+                                  MapStoresPage(
+                                      locationData: locationData,
+                                      myId: userData.id,
+                                      allStores: allStoresWhen)),
+                            ][i],
+                            child: SizedBox(
+                                height: safeAreaWidth * 0.1,
+                                width: safeAreaWidth * 0.1,
+                                child: imgIcon(
+                                    file: i == 0
+                                        ? "assets/img/search_icon.png"
+                                        : "assets/img/map_icon.png",
+                                    padding: safeAreaWidth * 0.01)),
+                          ),
+                        )
+                      }
+                    ],
+                  ),
                 ],
               ),
             ),

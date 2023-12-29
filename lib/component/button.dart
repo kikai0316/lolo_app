@@ -193,8 +193,6 @@ Widget addButton(BuildContext context, {required void Function() onTap}) {
       borderRadius: BorderRadius.circular(10),
       child: Container(
         alignment: Alignment.center,
-        // height: safeAreaHeight * 0.04,
-        // width: safeAreaWidth * 0.3,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
         ),

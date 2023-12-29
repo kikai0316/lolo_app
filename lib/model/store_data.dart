@@ -33,12 +33,12 @@ class StoryType {
 class EventType {
   Uint8List img;
   String id;
-  String title;
   DateTime date;
+  String category;
   EventType({
     required this.img,
     required this.id,
     required this.date,
-    required this.title,
+    required this.category,
   });
 }

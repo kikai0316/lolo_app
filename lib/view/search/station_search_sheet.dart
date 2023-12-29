@@ -10,11 +10,10 @@ import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/utility/utility.dart';
 import 'package:http/http.dart' as http;
-import 'package:lolo_app/view_model/all_stores.dart';
 
 class StationSearchSheetWidget extends HookConsumerWidget {
   const StationSearchSheetWidget({super.key, required this.onSearch});
-  final void Function(LatLng)? onSearch;
+  final void Function(StationData)? onSearch;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
@@ -82,7 +81,7 @@ class StationSearchSheetWidget extends HookConsumerWidget {
       return null;
     }, []);
     return Container(
-      height: safeAreaHeight * 0.8,
+      height: safeAreaHeight * 0.98,
       decoration: const BoxDecoration(
         color: blackColor,
         borderRadius: BorderRadius.only(
@@ -165,14 +164,11 @@ class StationSearchSheetWidget extends HookConsumerWidget {
                                 onTap: pageIndex.value == 2
                                     ? () {
                                         if (item.location.latitude != 0) {
-                                          final notifier = ref.read(
-                                              allStoresNotifierProvider
-                                                  .notifier);
-                                          notifier.dbGetStoreData(
-                                              item.location.latitude,
-                                              item.location.longitude);
                                           Navigator.pop(context);
-                                          onSearch!(item.location);
+                                          onSearch!(StationData(
+                                              name: "${item.name}駅周辺",
+                                              id: 0,
+                                              location: item.location));
                                         } else {
                                           isError.value = true;
                                         }
