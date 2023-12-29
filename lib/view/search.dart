@@ -1,249 +1,178 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lolo_app/component/loading.dart';
 import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/utility/screen_transition_utility.dart';
 import 'package:lolo_app/utility/utility.dart';
-import 'package:lolo_app/view/search/event_search_sheet.dart';
+import 'package:lolo_app/view/search/on_search_page.dart';
 import 'package:lolo_app/view/search/station_search_sheet.dart';
-import 'package:lolo_app/view/search/word_search_sheet.dart';
-import 'package:lolo_app/view/swiper.dart';
+import 'package:lolo_app/view_model/all_stores.dart';
 import 'package:lolo_app/widget/app_widget.dart';
-import 'package:lolo_app/widget/home_widget.dart';
-import 'package:lolo_app/widget/search_widget.dart';
+import 'package:lolo_app/widget/search/search_widget.dart';
+
+TextEditingController? searctextController;
 
 class SearchPage extends HookConsumerWidget {
-  SearchPage(
-      {super.key,
-      required this.nearStores,
-      required this.locationData,
-      required this.onSearch});
-  final List<StoreData> nearStores;
-  final LatLng locationData;
-  final void Function(LatLng)? onSearch;
-  final TextEditingController textController = TextEditingController();
+  const SearchPage({
+    super.key,
+    required this.locationData,
+  });
+  final Position locationData;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
     final text = useState<String>("");
-    final isLoading = useState<bool>(false);
-    Future<void> toSearch(LatLng location) async {
-      isLoading.value = true;
-      await Future<void>.delayed(const Duration(seconds: 2));
-      isLoading.value = true;
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context);
-      onSearch!(location);
-    }
+    final allStores = ref.watch(allStoresNotifierProvider);
+    final List<StoreData> allStoresWhen = allStores.when(
+      data: (value) => value != null
+          ? sortByDistance(
+                  value, LatLng(locationData.latitude, locationData.longitude))
+              .sublist(0, 5)
+          : [],
+      error: (e, s) => [],
+      loading: () => [],
+    );
+    useEffect(() {
+      searctextController = TextEditingController();
+      return null;
+    }, []);
 
-    return Stack(
-      children: [
-        Scaffold(
-          extendBody: true,
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.black,
-          appBar: appBar(context, "探す", true),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  left: safeAreaWidth * 0.02,
-                  right: safeAreaWidth * 0.02,
-                  bottom: safeAreaHeight * 0.03,
-                ),
-                child: searchTextFiled(context,
-                    textController: textController,
-                    deleteOnTap: text.value.isNotEmpty ? () {} : null,
-                    onChanged: (value) {
-                  text.value = value;
-                }, onFieldSubmitted: (String value) async {
-                  primaryFocus?.unfocus();
-                  if (value.isNotEmpty) {
-                    bottomSheet(context,
-                        page: WordSearchSheetWidget(
-                          onSearch: (value) => toSearch(value),
-                          searchWord: value,
-                        ),
-                        isBackgroundColor: false);
-                  }
-                }),
+    return Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.black,
+      appBar: appBar(context, "店舗を探す", false),
+      body: Padding(
+        padding: EdgeInsets.only(
+          left: safeAreaWidth * 0.02,
+          right: safeAreaWidth * 0.02,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: safeAreaHeight * 0.015,
               ),
-              Padding(
+              child: searchTextFiled(context,
+                  textController: searctextController,
+                  isFocus: true,
+                  deleteOnTap: text.value.isNotEmpty
+                      ? () {
+                          searctextController?.clear();
+                          text.value = "";
+                        }
+                      : null, onChanged: (value) {
+                text.value = value;
+              }, onFieldSubmitted: (String value) async {
+                primaryFocus?.unfocus();
+                screenTransitionNormal(
+                    context,
+                    OnSearchPage(
+                        searchWord: searctextController?.value.text ?? "",
+                        locationData: LatLng(
+                            locationData.latitude, locationData.longitude),
+                        isWordSearch: true));
+              }),
+            ),
+            stationSearchButton(
+              context,
+              onTap: () async {
+                bottomSheet(context,
+                    page: StationSearchSheetWidget(onSearch: (value) {
+                  primaryFocus?.unfocus();
+                  screenTransitionNormal(
+                      context,
+                      OnSearchPage(
+                          searchWord: value.name,
+                          locationData: value.location,
+                          isWordSearch: false));
+                }), isBackgroundColor: false);
+              },
+            ),
+            Padding(
                 padding: EdgeInsets.only(
-                    left: safeAreaWidth * 0.02,
-                    right: safeAreaWidth * 0.02,
-                    bottom: safeAreaHeight * 0.015),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  top: safeAreaHeight * 0.015,
+                  bottom: safeAreaHeight * 0.015,
+                ),
+                child: line(context)),
+            Expanded(
+                child: Stack(
+              children: [
+                if (MediaQuery.of(context).viewInsets.bottom > 0) ...{
+                  GestureDetector(
+                    onTap: () => primaryFocus?.unfocus(),
+                    child: Container(
+                      width: safeAreaWidth * 1,
+                      height: safeAreaHeight * 1,
+                      color: Colors.black.withOpacity(0),
+                    ),
+                  )
+                },
+                Wrap(
+                  spacing: safeAreaWidth * 0.03,
                   children: [
-                    for (int i = 0; i < 2; i++) ...{
-                      Material(
-                        color: blackColor,
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          onTap: () async {
-                            if (i == 0) {
-                              bottomSheet(context,
-                                  page: StationSearchSheetWidget(
-                                      onSearch: (value) => toSearch(value)),
-                                  isBackgroundColor: false);
-                            } else {
-                              final DateTime? selectedDate =
-                                  await showCalendar(context);
-                              if (selectedDate != null) {
-                                // ignore: use_build_context_synchronously
-                                bottomSheet(context,
-                                    page: EventSearchSheetWidget(
-                                        dateTime: selectedDate,
-                                        onSearch: (value) => toSearch(value)),
-                                    isBackgroundColor: false);
-                              }
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: safeAreaHeight * 0.045,
-                            width: safeAreaWidth * 0.46,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.white.withOpacity(0.6),
-                                  width: 1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: FittedBox(
-                              fit: BoxFit.fitWidth,
-                              child: Padding(
-                                padding: EdgeInsets.all(safeAreaWidth * 0.02),
-                                child: nText(i == 0 ? "駅から検索" : "イベント検索",
-                                    color: Colors.white,
-                                    fontSize: safeAreaWidth / 30,
-                                    bold: 400),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
+                    for (final item in allStoresWhen) ...{
+                      GestureDetector(
+                        onTap: () {
+                          searctextController =
+                              TextEditingController(text: item.name);
+                          text.value = item.name;
+                        },
+                        child: Chip(
+                            backgroundColor: Colors.black,
+                            side:
+                                BorderSide(color: Colors.grey.withOpacity(0.3)),
+                            label: nText(item.name,
+                                color: Colors.white,
+                                fontSize: safeAreaWidth / 30,
+                                bold: 700)),
+                      ),
                     }
                   ],
                 ),
-              ),
-              Container(
-                height: 1,
-                color: Colors.grey.withOpacity(0.3),
-              ),
-              Expanded(
-                  child: Stack(
-                children: [
-                  SizedBox(
-                    width: safeAreaWidth * 1,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          //(
-                          //     scrollDirection: Axis.horizontal,
-                          //     child: Row(
-                          //       mainAxisAlignment: MainAxisAlignment.start,
-                          //       children: [
-                          //         for (int i = 0; i < 10; i++) ...{
-                          //           areaWidget(context,
-                          //               index: i,
-                          //               itemCount: 12,
-                          //               name: i == 0 ? "渋谷" : "新宿")
-                          //         }
-                          //       ],
-                          //     )),
-                          if (nearStores.isNotEmpty) ...{
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: safeAreaWidth * 0.03,
-                                  top: safeAreaHeight * 0.03,
-                                  bottom: safeAreaHeight * 0.005),
-                              child: titleWithCircle(context, "付近のお店"),
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: safeAreaWidth * 0.02,
-                                  ),
-                                  for (int i = 0;
-                                      i < nearStores.length;
-                                      i++) ...{
-                                    OnStore(
-                                      isFocus: false,
-                                      myDataOnTap: () {},
-                                      storeData: nearStores[i],
-                                      locationonTap: null,
-                                      distance: calculateDistanceToString(
-                                          nearStores[i].location, locationData),
-                                      onTap: () => screenTransitionHero(
-                                        context,
-                                        SwiperPage(
-                                          storeList: nearStores,
-                                          index: i,
-                                        ),
-                                      ),
-                                    ),
-                                  },
-                                ],
-                              ),
-                            ),
-                          },
-                          searchTitleWithCircle(context, "アーティスト"),
-                          SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  // for (int i = 0; i < 10; i++) ...{
-                                  artistWidget(context, "Club Camelot")
-                                  // }
-                                ],
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (MediaQuery.of(context).viewInsets.bottom > 0) ...{
-                    GestureDetector(
-                      onTap: () => primaryFocus?.unfocus(),
-                      child: Container(
-                        width: safeAreaWidth * 1,
-                        height: safeAreaHeight * 1,
-                        color: Colors.black.withOpacity(0),
-                      ),
-                    )
-                  }
-                ],
-              )),
-            ],
-          ),
+              ],
+            ))
+          ],
         ),
-        loadinPage(context: context, isLoading: isLoading.value, text: null)
-      ],
+      ),
     );
   }
 
-  Widget searchTitleWithCircle(BuildContext context, String title) {
+  Widget stationSearchButton(BuildContext context,
+      {required void Function() onTap}) {
     final safeAreaHeight = safeHeight(context);
     final safeAreaWidth = MediaQuery.of(context).size.width;
-    return Padding(
-      padding: EdgeInsets.only(
-          left: safeAreaWidth * 0.03,
-          top: safeAreaHeight * 0.03,
-          bottom: safeAreaHeight * 0.005),
-      child: titleWithCircle(context, title),
+    return Material(
+      color: blackColor,
+      borderRadius: BorderRadius.circular(50),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(50),
+        child: Container(
+          alignment: Alignment.center,
+          height: safeAreaHeight * 0.04,
+          width: safeAreaWidth / 3,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.withOpacity(0.5), width: 1),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Padding(
+              padding: EdgeInsets.all(safeAreaWidth * 0.02),
+              child: nText("駅から検索",
+                  color: Colors.white, fontSize: safeAreaWidth / 30, bold: 400),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

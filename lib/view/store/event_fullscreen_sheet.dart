@@ -51,12 +51,12 @@ class EventFullScreenSheet extends HookConsumerWidget {
                       padding: EdgeInsets.only(
                           top: safeAreaHeight * 0.03,
                           bottom: safeAreaHeight * 0.02),
-                      child: titleWithCircle(context, "イベント名"),
+                      child: titleWithCircle(context, "イベント内容"),
                     ),
-                    nText(event.title,
-                        color: Colors.white,
-                        fontSize: safeAreaWidth / 20,
-                        bold: 700),
+                    // nText(event.title,//後
+                    //     color: Colors.white,
+                    //     fontSize: safeAreaWidth / 20,
+                    //     bold: 700),
                   ],
                 ),
               )

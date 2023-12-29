@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:adaptive_action_sheet/adaptive_action_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,8 @@ import 'package:lolo_app/constant/color.dart';
 import 'package:lolo_app/constant/text.dart';
 import 'package:lolo_app/model/store_data.dart';
 import 'package:lolo_app/model/user_data.dart';
-import 'package:lolo_app/view/home.dart';
-import 'package:lolo_app/view/location_request.dart';
+import 'package:lolo_app/view/initiale_page.dart';
+import 'package:lolo_app/view/pages/location_request.dart';
 import 'package:lolo_app/view/not_data/not_birthday_page.dart';
 import 'package:lolo_app/view/not_data/not_img_page.dart';
 import 'package:lolo_app/view/not_data/not_name_page.dart';
@@ -110,25 +111,20 @@ Future getMobileImage({
   }
 }
 
-Future<Widget> nextScreenWithLocationCheck(
-  UserData userData,
-) async {
+Future<Widget> nextScreenWithLocationCheck() async {
   final serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     return const NotLocationPermissionPage();
   }
-
   final permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.deniedForever) {
     return const NotLocationPermissionPage();
   }
-
   if (permission == LocationPermission.denied) {
-    return RequestLocationsPage(userData: userData);
+    return const RequestLocationsPage();
   }
-
   final currentPosition = await Geolocator.getCurrentPosition();
-  return HomePage(myId: userData.id, locationData: currentPosition);
+  return InitialPage(locationData: currentPosition);
 }
 
 void showAlertDialog(
@@ -354,4 +350,33 @@ double calculateDistance(LatLng loc1, LatLng loc2) {
           (1 - cos((loc2.longitude - loc1.longitude) * p)) /
           2;
   return 12742 * asin(sqrt(a));
+}
+
+List<StoreData> sortByDistance(List<StoreData> stores, LatLng currentLocation) {
+  stores.sort((a, b) => calculateDistance(a.location, currentLocation)
+      .compareTo(calculateDistance(b.location, currentLocation)));
+  return stores;
+}
+
+List<StoryType> sortStoriesByOldestDate(List<StoryType> stories) {
+  List<StoryType> sortedStories = List<StoryType>.from(stories)
+    ..sort((a, b) => a.date.compareTo(b.date));
+  return sortedStories;
+}
+
+Future<void> showBottomMenu(BuildContext context,
+    {required void Function() onDelete}) async {
+  final safeAreaWidth = MediaQuery.of(context).size.width;
+  await showAdaptiveActionSheet(
+      context: context,
+      androidBorderRadius: 30,
+      actions: <BottomSheetAction>[
+        BottomSheetAction(
+            title: nText("投稿削除",
+                color: Colors.red, fontSize: safeAreaWidth / 25, bold: 700),
+            onPressed: (context) => onDelete()),
+      ],
+      cancelAction: CancelAction(
+          title: nText("キャンセル",
+              color: blueColor, fontSize: safeAreaWidth / 25, bold: 700)));
 }

@@ -8,7 +8,7 @@ part 'store_data.freezed.dart';
 @freezed
 class StoreData with _$StoreData {
   const factory StoreData(
-      {required List<StoryImgType> postImgList,
+      {required List<StoryType> storyList,
       required Uint8List? logo,
       required String id,
       required String name,
@@ -19,11 +19,11 @@ class StoreData with _$StoreData {
       required LatLng location}) = _StoreData;
 }
 
-class StoryImgType {
+class StoryType {
   Uint8List img;
   String id;
   DateTime date;
-  StoryImgType({
+  StoryType({
     required this.img,
     required this.id,
     required this.date,
@@ -33,12 +33,12 @@ class StoryImgType {
 class EventType {
   Uint8List img;
   String id;
-  String title;
   DateTime date;
+  String category;
   EventType({
     required this.img,
     required this.id,
     required this.date,
-    required this.title,
+    required this.category,
   });
 }

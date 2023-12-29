@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 Future<StoreData?> storeDataGet(String id) async {
   try {
-    final List<StoryImgType> storyImgList = [];
+    final List<StoryType> storyImgList = [];
     final List<EventType> eventList = [];
     final resultMain =
         await FirebaseStorage.instance.ref("store/$id/main").listAll();
@@ -23,7 +23,7 @@ Future<StoreData?> storeDataGet(String id) async {
         final Uint8List? getImg = await ref.getData();
         final List<String> parts = ref.name.split('@');
         if (getImg != null && parts.length == 2) {
-          storyImgList.add(StoryImgType(
+          storyImgList.add(StoryType(
               img: getImg, id: parts[0], date: DateTime.parse(parts[1])));
         }
       }
@@ -34,15 +34,17 @@ Future<StoreData?> storeDataGet(String id) async {
           eventList.add(EventType(
             img: getImg,
             id: parts[0],
+            category: parts[1],
             date: DateTime.parse(
               parts[2],
             ),
-            title: parts[1],
           ));
         }
       }
       return StoreData(
-          postImgList: storyImgList,
+          storyList: sortStoriesByOldestDate(
+            storyImgList,
+          ),
           logo: mainImgGet,
           id: "",
           name: "",
@@ -79,28 +81,27 @@ Future<bool> upLoadMain(Uint8List img, String id) async {
   }
 }
 
-Future<bool> upLoadStory(
-    {required List<StoryImgType> addDataList,
+Future<bool> upDataStory(
+    {required StoryType data,
     required String id,
-    required List<String> deleteDataList}) async {
+    required bool isDelete}) async {
   try {
-    if (deleteDataList.isNotEmpty) {
+    if (isDelete) {
       final resultStory =
           await FirebaseStorage.instance.ref("store/$id/story").listAll();
       for (final ref in resultStory.items) {
         final List<String> parts = ref.name.split('@');
-        if (deleteDataList.contains(parts[0])) {
+        if (data.id == parts[0]) {
           ref.delete();
         }
       }
-    }
-    for (final item in addDataList) {
+    } else {
       final directory = await getApplicationDocumentsDirectory();
       final imagePath = '${directory.path}/story.png';
       File file = File(imagePath);
-      await file.writeAsBytes(item.img);
+      await file.writeAsBytes(data.img);
       await FirebaseStorage.instance
-          .ref("store/$id/story/${item.id}@${item.date}")
+          .ref("store/$id/story/${data.id}@${data.date}")
           .putFile(file);
     }
     return true;
@@ -130,7 +131,7 @@ Future<bool> upLoadEvent(
       File file = File(imagePath);
       await file.writeAsBytes(item.img);
       await FirebaseStorage.instance
-          .ref("store/$id/event/${item.id}@${item.title}@${item.date}")
+          .ref("store/$id/event/${item.id}@${item.category}@${item.date}") //後
           .putFile(file);
     }
     return true;
